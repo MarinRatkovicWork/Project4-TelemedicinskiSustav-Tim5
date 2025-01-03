@@ -217,6 +217,30 @@
         }
     }
 
+//Connect Frontend to Backend
+//Fetch Patients
+async function fetchPatients() {
+    const response = await fetch('/api/patients');
+    const patients = await response.json();
+    console.log(patients);
+}
+//Add New Patient
+async function addNewPatient() {
+    const name = document.getElementById('newPatientName').value;
+    const email = document.getElementById('newPatientEmail').value;
+
+    const response = await fetch('/api/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+    });
+
+    if (response.ok) {
+        alert('Patient added successfully!');
+    }
+}
+
+
     // Initialize the app
     document.addEventListener('DOMContentLoaded', () => {
         hideAllScreens();
