@@ -1,6 +1,6 @@
-package src.main.repositories;
+package com.telemedicina.repositories;
 
-import src.main.models.Patient;
+import com.telemedicina.models.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {

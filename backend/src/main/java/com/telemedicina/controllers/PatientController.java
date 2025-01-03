@@ -1,7 +1,7 @@
-package src.main.controllers;
+package com.telemedicina.controllers;
 
-import src.main.models.Patient;
-import src.main.repositories.PatientRepository;
+import com.telemedicina.models.Patient;
+import com.telemedicina.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
