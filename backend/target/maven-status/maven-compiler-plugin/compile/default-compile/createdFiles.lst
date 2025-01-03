@@ -1,0 +1,7 @@
+com\telemedicina\models\HealthRecord.class
+com\telemedicina\TelemedApplication.class
+com\telemedicina\controllers\PatientController.class
+com\telemedicina\models\Patient.class
+com\telemedicina\controllers\HealthRecordController.class
+com\telemedicina\repositories\HealthRecordRepository.class
+com\telemedicina\repositories\PatientRepository.class

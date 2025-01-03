@@ -27,6 +27,10 @@
         </div>
         <button class="button" onclick="login()">Prijava</button>
     </form>
+    <!-- Add Register Navigation on Login Screen -->
+    <div class="login-footer">
+        <p>Don't have an account? <button class="link-button" onclick="showRegisterScreen()">Register Here</button></p>
+    </div>
 </div>
 
 <!-- Patient Dashboard -->
@@ -167,6 +171,33 @@
         <tbody id="patientHealthDataBody">
         </tbody>
     </table>
+</div>
+
+<!-- Register Screen -->
+<div class="container" id="registerScreen" style="display: none;">
+    <div class="header">
+        <h1>Register</h1>
+    </div>
+    <form onsubmit="return false;">
+        <div class="input-group">
+            <label for="registerName">Name</label>
+            <input type="text" id="registerName" placeholder="Enter your name">
+        </div>
+        <div class="input-group">
+            <label for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" placeholder="Enter your email">
+        </div>
+        <div class="input-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" placeholder="Enter your password">
+        </div>
+        <div class="input-group">
+            <label for="registerConfirmPassword">Confirm Password</label>
+            <input type="password" id="registerConfirmPassword" placeholder="Confirm your password">
+        </div>
+        <button class="button" onclick="register()">Register</button>
+        <button class="button button-secondary" onclick="showLoginScreen()">Back to Login</button>
+    </form>
 </div>
 
 <script src="app.js"></script>

@@ -1,248 +1,227 @@
- let loginType = 'patient';
-    let healthData = {};
-    let patients = [
-        { id: 1, name: "Iva Ivić", email: "iva.ivic@gmail.com" },
-        { id: 2, name: "Marko Markić", email: "marko.markic@gmail.com" },
-        { id: 3, name: "Ivan Horvat", email: "ivan.horvat@gmail.com" }
-    ];
+let loginType = 'patient';
+let healthData = {};
+let patients = [];
 
-    function setLoginType(type) {
-        loginType = type;
-        document.querySelectorAll('.login-option').forEach(option => {
-            option.classList.remove('active');
+// Postavljanje tipa prijave
+function setLoginType(type) {
+    loginType = type;
+    document.querySelectorAll('.login-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+// Funkcija za prijavu
+async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (email && password) {
+        const response = await fetch(`/api/login?type=${loginType}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
-        event.target.classList.add('active');
-    }
 
-    function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        if (email && password) {
+        if (response.ok) {
             if (loginType === 'doctor') {
                 showDoctorDashboard();
             } else {
                 showDashboard();
             }
         } else {
-            alert('Please enter both email and password');
+            alert('Invalid email or password');
         }
+    } else {
+        alert('Please enter both email and password');
     }
+}
 
-    function showDashboard() {
-        hideAllScreens();
-        document.getElementById('dashboardScreen').style.display = 'block';
-        displayRecentRecords();
+// Prikazuje ekran za prijavu
+ function showLoginScreen() {
+     hideAllScreens(); // Sakrij sve ekrane
+     const loginScreen = document.getElementById('loginScreen');
+     if (loginScreen) {
+         loginScreen.style.display = 'block'; // Prikazujemo ekran za prijavu
+     } else {
+         console.error("Ekran za prijavu nije pronađen!");
+     }
+ }
+// Prikazuje ekran za registraciju
+function showRegisterScreen() {
+    hideAllScreens();
+    const registerScreen = document.getElementById('registerScreen');
+    if (registerScreen) {
+        registerScreen.style.display = 'block';
+    } else {
+        console.error("Ekran za registraciju nije pronađen!");
     }
+}
+// Prikaz korisničkog sučelja za pacijenta
+function showDashboard() {
+    hideAllScreens();
+    document.getElementById('dashboardScreen').style.display = 'block';
+    displayRecentRecords();
+}
 
-    function showDoctorDashboard() {
-        hideAllScreens();
-        document.getElementById('doctorScreen').style.display = 'block';
-        displayPatientList();
-    }
+// Prikaz korisničkog sučelja za doktora
+async function showDoctorDashboard() {
+    hideAllScreens();
+    document.getElementById('doctorScreen').style.display = 'block';
+    await fetchPatients();
+    displayPatientList();
+}
 
-    function showHealthMetrics() {
-        hideAllScreens();
-        document.getElementById('metricsScreen').style.display = 'block';
-    }
+// Funkcija za prikaz prethodnih podataka
+function showPreviousData() {
+    hideAllScreens();
+    document.getElementById('previousDataScreen').style.display = 'block';
+    displayHealthData();
+}
 
-    function showSuccess() {
-        hideAllScreens();
-        document.getElementById('successScreen').style.display = 'block';
-    }
+// Sakrij sve ekrane
+function hideAllScreens() {
+    const screens = ['loginScreen', 'dashboardScreen', 'metricsScreen', 'successScreen', 'doctorScreen', 'previousDataScreen', 'addPatientScreen', 'patientRecordsScreen'];
+    screens.forEach(screen => {
+        document.getElementById(screen).style.display = 'none';
+    });
+}
 
-    function showPreviousData() {
-        hideAllScreens();
-        document.getElementById('previousDataScreen').style.display = 'block';
-        displayHealthData();
-    }
+// Brisanje pacijenta
+async function deletePatient(index) {
+    const patient = patients[index];
 
-    function showAddPatientForm() {
-        hideAllScreens();
-        document.getElementById('addPatientScreen').style.display = 'block';
-    }
+    if (confirm('Are you sure you want to delete this patient?')) {
+        const response = await fetch(`/api/patients/${patient.id}`, { method: 'DELETE' });
 
-    function hideAllScreens() {
-        const screens = ['loginScreen', 'dashboardScreen', 'metricsScreen', 'successScreen', 'doctorScreen', 'previousDataScreen', 'addPatientScreen', 'patientRecordsScreen'];
-        screens.forEach(screen => {
-            document.getElementById(screen).style.display = 'none';
-        });
-    }
-
-    function deletePatient(index) {
-        if (confirm('Are you sure you want to delete this patient?')) {
+        if (response.ok) {
             patients.splice(index, 1);
             displayPatientList();
         }
     }
+}
 
-    function updatePatient(index) {
-        const patient = patients[index];
-        const name = prompt('Update patient name:', patient.name);
-        const email = prompt('Update patient email:', patient.email);
+// Ažuriranje pacijenta
+async function updatePatient(index) {
+    const patient = patients[index];
+    const name = prompt('Update patient name:', patient.name);
+    const email = prompt('Update patient email:', patient.email);
 
-        if (name && email) {
+    if (name && email) {
+        const response = await fetch(`/api/patients/${patient.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+        });
+
+        if (response.ok) {
             patients[index] = { ...patient, name, email };
             displayPatientList();
         }
     }
-
-    function saveHealthData() {
-        const heartRate = document.getElementById('heartRate').value;
-        const bloodPressure = document.getElementById('bloodPressure').value;
-        const bloodSugar = document.getElementById('bloodSugar').value;
-        const date = new Date().toLocaleString();
-
-        if (!healthData[loginType]) {
-            healthData[loginType] = [];
-        }
-        healthData[loginType].push({ date, heartRate, bloodPressure, bloodSugar });
-        showSuccess();
-        displayRecentRecords();
-    }
-
-    function displayHealthData() {
-        const tableBody = document.getElementById('healthDataBody');
-        tableBody.innerHTML = '';
-        if (healthData[loginType]) {
-            healthData[loginType].forEach(data => {
-                const row = tableBody.insertRow();
-                row.insertCell(0).textContent = data.date;
-                row.insertCell(1).textContent = data.heartRate;
-                row.insertCell(2).textContent = data.bloodPressure;
-                row.insertCell(3).textContent = data.bloodSugar;
-            });
-        }
-    }
-
-    function displayPatientList() {
-        const patientList = document.getElementById('patientList');
-        patientList.innerHTML = '';
-        patients.forEach((patient, index) => {
-            const patientCard = document.createElement('div');
-            patientCard.className = 'patient-card';
-            patientCard.innerHTML = `
-                <img src="https://i.pravatar.cc/150?img=${patient.id}" alt="${patient.name}">
-                <div class="patient-info">
-                    <div class="patient-name">${patient.name}</div>
-                    <div class="patient-appointment">${patient.email}</div>
-                </div>
-                <div class="dropdown">
-                    <button class="button button-secondary">...</button>
-                    <div class="dropdown-content">
-                        <a href="#" onclick="deletePatient(${index})">Delete Patient</a>
-                        <a href="#" onclick="updatePatient(${index})">Update Patient</a>
-                    </div>
-                </div>
-            `;
-            patientCard.onclick = () => showPatientRecords(patient);
-            patientList.appendChild(patientCard);
-        });
-    }
-
-    function addNewPatient() {
-        const name = document.getElementById('newPatientName').value;
-        const email = document.getElementById('newPatientEmail').value;
-        if (name && email) {
-            const newId = patients.length + 1;
-            patients.push({ id: newId, name, email });
-            showDoctorDashboard();
-        } else {
-            alert('Please enter both name and email');
-        }
-    }
-
-    function showPatientRecords(patient) {
-        hideAllScreens();
-        document.getElementById('patientRecordsScreen').style.display = 'block';
-        document.getElementById('patientRecordsName').textContent = patient.name;
-        const tableBody = document.getElementById('patientHealthDataBody');
-        tableBody.innerHTML = '';
-        if (healthData[patient.email]) {
-            healthData[patient.email].forEach(data => {
-                const row = tableBody.insertRow();
-                row.insertCell(0).textContent = data.date;
-                row.insertCell(1).textContent = data.heartRate;
-                row.insertCell(2).textContent = data.bloodPressure;
-                row.insertCell(3).textContent = data.bloodSugar;
-            });
-        } else {
-            tableBody.innerHTML = '<tr><td colspan="4">No health data available for this patient.</td></tr>';
-        }
-    }
-
-    function quickAddHeartRate() {
-        const heartRate = prompt("Enter your current heart rate (bpm):");
-        if (heartRate) {
-            const date = new Date().toLocaleString();
-            if (!healthData[loginType]) {
-                healthData[loginType] = [];
-            }
-            healthData[loginType].push({ date, heartRate, bloodPressure: '-', bloodSugar: '-' });
-            displayRecentRecords();
-            showDashboard();
-        }
-    }
-
-    function quickAddBloodPressure() {
-        const bloodPressure = prompt("Enter your current blood pressure (e.g., 120/80):");
-        if (bloodPressure) {
-            const date = new Date().toLocaleString();
-            if (!healthData[loginType]) {
-                healthData[loginType] = [];
-            }
-            healthData[loginType].push({ date, heartRate: '-', bloodPressure, bloodSugar: '-' });
-            displayRecentRecords();
-            showDashboard();
-        }
-    }
-
-    function logout() {
-        hideAllScreens();
-        document.getElementById('loginScreen').style.display = 'block';
-    }
-
-    function displayRecentRecords() {
-        const tableBody = document.getElementById('recentRecordsBody');
-        tableBody.innerHTML = '';
-        if (healthData[loginType]) {
-            // Display only the last 3 records
-            const recentData = healthData[loginType].slice(-3).reverse();
-            recentData.forEach(data => {
-                const row = tableBody.insertRow();
-                row.insertCell(0).textContent = data.date;
-                row.insertCell(1).textContent = data.heartRate || '-';
-                row.insertCell(2).textContent = data.bloodPressure || '-';
-                row.insertCell(3).textContent = data.bloodSugar || '-';
-            });
-        }
-    }
-
-//Connect Frontend to Backend
-//Fetch Patients
-async function fetchPatients() {
-    const response = await fetch('/api/patients');
-    const patients = await response.json();
-    console.log(patients);
 }
-//Add New Patient
+
+// Dodavanje novog pacijenta
 async function addNewPatient() {
     const name = document.getElementById('newPatientName').value;
     const email = document.getElementById('newPatientEmail').value;
 
-    const response = await fetch('/api/patients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email })
-    });
+    if (name && email) {
+        const response = await fetch('/api/patients', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+        });
 
-    if (response.ok) {
-        alert('Patient added successfully!');
+        if (response.ok) {
+            alert('Patient added successfully!');
+            await fetchPatients();
+            showDoctorDashboard();
+        }
+    } else {
+        alert('Please enter both name and email');
     }
 }
 
+// Dohvaćanje popisa pacijenata s backenda
+async function fetchPatients() {
+    const response = await fetch('/api/patients');
+    patients = await response.json();
+}
 
-    // Initialize the app
-    document.addEventListener('DOMContentLoaded', () => {
-        hideAllScreens();
-        document.getElementById('loginScreen').style.display = 'block';
+// Prikaz popisa pacijenata
+function displayPatientList() {
+    const patientList = document.getElementById('patientList');
+    patientList.innerHTML = '';
+    patients.forEach((patient, index) => {
+        const patientCard = document.createElement('div');
+        patientCard.className = 'patient-card';
+        patientCard.innerHTML = `
+            <img src="https://i.pravatar.cc/150?img=${patient.id}" alt="${patient.name}">
+            <div class="patient-info">
+                <div class="patient-name">${patient.name}</div>
+                <div class="patient-appointment">${patient.email}</div>
+            </div>
+            <div class="dropdown">
+                <button class="button button-secondary">...</button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="deletePatient(${index})">Delete Patient</a>
+                    <a href="#" onclick="updatePatient(${index})">Update Patient</a>
+                </div>
+            </div>
+        `;
+        patientCard.onclick = () => showPatientRecords(patient);
+        patientList.appendChild(patientCard);
     });
+}
+
+// Prikaz medicinskih podataka pacijenta
+async function showPatientRecords(patient) {
+    hideAllScreens();
+    document.getElementById('patientRecordsScreen').style.display = 'block';
+    document.getElementById('patientRecordsName').textContent = patient.name;
+
+    const response = await fetch(`/api/patients/${patient.id}/records`);
+    const records = await response.json();
+
+    const tableBody = document.getElementById('patientHealthDataBody');
+    tableBody.innerHTML = '';
+    records.forEach(data => {
+        const row = tableBody.insertRow();
+        row.insertCell(0).textContent = data.date;
+        row.insertCell(1).textContent = data.heartRate;
+        row.insertCell(2).textContent = data.bloodPressure;
+        row.insertCell(3).textContent = data.bloodSugar;
+    });
+}
+
+// Spremanje medicinskih podataka pacijenta
+async function saveHealthData() {
+    const heartRate = document.getElementById('heartRate').value;
+    const bloodPressure = document.getElementById('bloodPressure').value;
+    const bloodSugar = document.getElementById('bloodSugar').value;
+
+    const response = await fetch('/api/health-records', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            date: new Date().toISOString().split('T')[0],
+            heartRate: parseInt(heartRate),
+            bloodPressure,
+            bloodSugar: parseInt(bloodSugar),
+            patient: { id: patients[0].id } // Replace with actual patient ID
+        })
+    });
+
+    if (response.ok) {
+        alert('Health data saved successfully!');
+        showDashboard();
+    }
+}
+
+// Inicijalizacija aplikacije
+document.addEventListener('DOMContentLoaded', async () => {
+    hideAllScreens();
+    document.getElementById('loginScreen').style.display = 'block';
+    await fetchPatients();
+});
