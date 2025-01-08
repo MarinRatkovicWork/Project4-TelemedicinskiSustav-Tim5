@@ -13,6 +13,8 @@ public class Patient {
     private String name;
     private String email;
 
+    private String password;
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<HealthRecord> healthRecords;
@@ -20,10 +22,11 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(Long id, String name, String email, List<HealthRecord> healthRecords) {
+    public Patient(Long id, String name, String email, String password, List<HealthRecord> healthRecords) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
         this.healthRecords = healthRecords;
     }
 
@@ -50,6 +53,14 @@ public class Patient {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<HealthRecord> getHealthRecords() {
