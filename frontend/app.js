@@ -1,6 +1,8 @@
 let loginType = 'patient';
 let healthData = {};
 let patients = [];
+let currentUserId = null;
+let recentHealthRecords = [];
 
 // Postavljanje tipa prijave
 function setLoginType(type) {
@@ -32,6 +34,7 @@ async function login() {
     // Obrada odgovora sa servera
     if (response.ok) {
         const user = await response.json();
+        currentUserId = user.id; // Save the user ID
         alert('Prijava uspješna!');
         showDashboard(user); // Prikaz dashboarda nakon uspješne prijave
     } else {
@@ -83,27 +86,83 @@ async function register() {
         alert(`Greška: ${errorMessage}`);
     }
 }
+/// Fetch recent health records from the backend
+ async function fetchRecentHealthRecords() {
+     const response = await fetch('http://localhost:8080/api/health-records/recent'); // Get recent records from the backend
+
+     // Check if the response is successful
+     if (response.ok) {
+         recentHealthRecords = await response.json(); // Store the records in the global variable
+         updateRecentRecordsTable(); // Call function to update the table
+     } else {
+         const errorMessage = await response.text();
+         alert(`Error fetching records: ${errorMessage}`);
+     }
+ }
+
+
+ // Update the table with the fetched recent health records
+ function updateRecentRecordsTable() {
+     const tableBody = document.getElementById('recentRecordsBody');
+     tableBody.innerHTML = ''; // Clear any existing data
+
+     // Loop through the records and insert rows in the table
+     recentHealthRecords.forEach(record => {
+         const row = tableBody.insertRow();
+
+         // Create table cells and populate them with the record data
+         row.insertCell(0).textContent = record.date;
+         row.insertCell(1).textContent = record.heartRate;
+         row.insertCell(2).textContent = record.bloodPressure;
+         row.insertCell(3).textContent = record.bloodSugar;
+     });
+ }
+
+
+ // Prikaz prethodnih podataka (which will fetch and display all health data)
+ function showPreviousData() {
+     hideAllScreens();
+     document.getElementById('previousDataScreen').style.display = 'block';
+     displayHealthData();
+ }
+
+ // Function to display health data in another screen
+ function displayHealthData() {
+     // Assuming this is where we want to display the full list of records
+     const tableBody = document.getElementById('fullHealthDataBody');
+     tableBody.innerHTML = ''; // Clear any existing data
+
+     // Loop through the records and insert rows
+     recentHealthRecords.forEach(record => {
+         const row = tableBody.insertRow();
+         row.insertCell(0).textContent = record.date;
+         row.insertCell(1).textContent = record.heartRate;
+         row.insertCell(2).textContent = record.bloodPressure;
+         row.insertCell(3).textContent = record.bloodSugar;
+     });
+ }
 
 async function addHealthRecord() {
-    const date = document.getElementById('date').value;
     const heartRate = document.getElementById('heartRate').value;
     const bloodPressure = document.getElementById('bloodPressure').value;
     const bloodSugar = document.getElementById('bloodSugar').value;
-    const patientId = document.getElementById('patientId').value; // Assuming you have patient ID on the frontend
+
+    // Use the current date in 'YYYY-MM-DD' format
+    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in ISO format (YYYY-MM-DD)
 
     // Ensure all fields are filled
-    if (!date || !heartRate || !bloodPressure || !bloodSugar || !patientId) {
+    if (!heartRate || !bloodPressure || !bloodSugar || !currentUserId) {
         alert('Please fill in all the fields!');
         return;
     }
 
     // Prepare the health record object
     const healthRecord = {
-        date: date, // Date in string format (YYYY-MM-DD)
+        date: currentDate, // Use current date
         heartRate: parseInt(heartRate),
         bloodPressure: bloodPressure,
         bloodSugar: parseInt(bloodSugar),
-        patient: { id: patientId }, // Send only patient ID
+        patient: { id: currentUserId }, // Use the current logged-in user's ID
     };
 
     // Send the POST request to the backend to add the health record
@@ -115,7 +174,7 @@ async function addHealthRecord() {
         body: JSON.stringify(healthRecord),
     });
 
-    // Handle the response from the server
+
     if (response.ok) {
         const record = await response.json();
         alert('Health record added successfully!');
@@ -125,9 +184,6 @@ async function addHealthRecord() {
         alert(`Error: ${errorMessage}`);
     }
 }
-
-
-
 
 // Prikazuje ekran za prijavu
  function showLoginScreen() {
@@ -149,12 +205,12 @@ function showRegisterScreen() {
         console.error("Ekran za registraciju nije pronađen!");
     }
 }
-// Prikaz korisničkog sučelja za pacijenta
-function showDashboard() {
+function showDashboard(user) {
     hideAllScreens();
     document.getElementById('dashboardScreen').style.display = 'block';
-    displayRecentRecords();
+    fetchRecentHealthRecords(); // Fetch recent health records when dashboard is shown
 }
+
 
 // Prikaz korisničkog sučelja za doktora
 async function showDoctorDashboard() {
@@ -212,7 +268,10 @@ async function updatePatient(index) {
         }
     }
 }
-
+function showHealthMetrics() {
+        hideAllScreens();
+        document.getElementById('metricsScreen').style.display = 'block';
+    }
 // Dodavanje novog pacijenta
 async function addNewPatient() {
     const name = document.getElementById('newPatientName').value;

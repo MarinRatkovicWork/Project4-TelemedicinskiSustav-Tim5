@@ -32,7 +32,6 @@
         <p>Don't have an account? <button class="link-button" onclick="showRegisterScreen()">Register Here</button></p>
     </div>
 </div>
-
 <!-- Patient Dashboard -->
 <div class="container" id="dashboardScreen" style="display: none;">
     <div class="header">
@@ -62,19 +61,12 @@
         <tbody id="recentRecordsBody">
         </tbody>
     </table>
-    <button class="button" onclick="addHealthRecord()">Add Health Data</button>
+    <button class="button" onclick="showHealthMetrics()">Add Health Data</button>
     <button class="button button-secondary" onclick="showPreviousData()">View All Data</button>
 </div>
 
-<!-- Doctor's Dashboard -->
-<div class="container" id="doctorScreen" style="display: none;">
-    <div class="header">
-        <h1>Patient List</h1>
-        <button class="button button-secondary" onclick="logout()">Logout</button>
-    </div>
-    <div id="patientList"></div>
-    <button class="button" onclick="showAddPatientForm()">Add New Patient</button>
-</div>
+
+
 
 <!-- Health Metrics Input -->
 <div class="container" id="metricsScreen" style="display: none;">
@@ -95,9 +87,23 @@
             <label for="bloodSugar">Blood Sugar (mg/dL)</label>
             <input type="number" id="bloodSugar">
         </div>
-        <button class="button" onclick="saveHealthData()">Save</button>
+        <button class="button" onclick="addHealthRecord()">Save</button>
     </form>
 </div>
+
+
+
+<!-- Doctor's Dashboard -->
+<div class="container" id="doctorScreen" style="display: none;">
+    <div class="header">
+        <h1>Patient List</h1>
+        <button class="button button-secondary" onclick="logout()">Logout</button>
+    </div>
+    <div id="patientList"></div>
+    <button class="button" onclick="showAddPatientForm()">Add New Patient</button>
+</div>
+
+
 
 <!-- Success Screen -->
 <div class="container" id="successScreen" style="display: none;">
