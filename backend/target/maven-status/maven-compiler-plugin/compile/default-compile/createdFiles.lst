@@ -3,12 +3,16 @@ com\telemedicina\models\HealthRecord.class
 com\telemedicina\models\LoginRequest.class
 com\telemedicina\controllers\AuthController.class
 com\telemedicina\models\Admin.class
+com\telemedicina\services\PatientService.class
 com\telemedicina\services\HealthRecordService.class
 com\telemedicina\models\Doctor.class
 com\telemedicina\controllers\HealthRecordController.class
+com\telemedicina\services\AuthService.class
 com\telemedicina\repositories\AdminRepository.class
+com\telemedicina\controllers\DoctorController.class
 com\telemedicina\TelemedApplication.class
 com\telemedicina\controllers\PatientController.class
+com\telemedicina\services\DoctorService.class
 com\telemedicina\models\Patient.class
 com\telemedicina\repositories\DoctorRepository.class
 com\telemedicina\repositories\HealthRecordRepository.class

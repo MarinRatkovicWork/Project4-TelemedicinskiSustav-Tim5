@@ -87,7 +87,7 @@
             <button class="button button-secondary" onclick="logout()">Logout</button>
         </div>
         <div id="patientList"></div>
-        <button class="button" onclick="showRegisterForm()">Add New Patient</button>
+        <button class="button" onclick="showRegisterFormDoctor()">Add New Patient</button>
     </div>
 
     <!-- Health Metrics Input -->
@@ -181,11 +181,11 @@
         </table>
     </div>
 
-    <!-- Register Form -->
-    <div class="container" id="registerScreen" style="display: none;">
+    <!-- Register Form for doctor -->
+    <div class="container" id="registerScreenDoctor" style="display: none;">
         <div class="header">
             <button class="back-button" onclick="showLoginScreen()">←</button>
-            <h1>Register</h1>
+            <h1>Register Patient</h1>
         </div>
         <form onsubmit="return false;">
             <div class="input-group">
@@ -206,6 +206,53 @@
             <button class="button" onclick="register()">Register</button>
         </form>
     </div>
+
+    <!-- Register Form for Admin -->
+    <div class="container" id="registerScreenAdmin" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showAdminDashboard()">←</button>
+            <h1>Register User</h1>
+        </div>
+        <form onsubmit="return false;">
+            <!-- Select Role Section -->
+            <div class="button-group">
+                <button type="button" class="button role-button" id="doctorButton" onclick="selectRole('Doctor')">Doctor</button>
+                <button type="button" class="button role-button" id="patientButton" onclick="selectRole('Patient')">Patient</button>
+            </div>
+
+            <!-- First Name and Last Name for Doctor Registration -->
+            <div class="input-group">
+                <label for="registerFirstName">First Name</label>
+                <input type="text" id="registerFirstName" placeholder="Enter first name">
+            </div>
+
+            <div class="input-group">
+                <label for="registerLastName">Last Name</label>
+                <input type="text" id="registerLastName" placeholder="Enter last name">
+            </div>
+
+            <div class="input-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmailAdmin" placeholder="Enter email">
+            </div>
+
+            <!-- Add the Role Field (hidden) -->
+            <input type="hidden" id="selectedRole" value="Patient"> <!-- Default is 'Patient' -->
+
+            <div class="input-group">
+                <label for="registerPassword">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="registerPasswordAdmin" placeholder="Enter password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPassword')">👁️</button>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="button full-width" onclick="registerAdmin()">Register</button>
+            </div>
+        </form>
+    </div>
+
 
     <!-- Change Password Form -->
     <div class="container" id="changePasswordScreen" style="display: none;">
@@ -242,11 +289,54 @@
             <h1>Admin Dashboard</h1>
             <button class="button button-secondary" onclick="logout()">Logout</button>
         </div>
-        <button class="button" onclick="showAddUserForm()">Add User</button>
-        <div id="userList"></div>
+
+        <!-- Scrollable List for Doctors -->
+        <div class="scrollable-list">
+            <h2>Doctors</h2>
+            <div class="scroll-list" style="overflow-y: auto; flex: 1;">
+                <!-- Table to display doctor information -->
+                <table id="doctorTable">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Number of patients</th>
+                    </tr>
+                    </thead>
+                    <tbody id="doctorListAdmin">
+                    <!-- Doctor rows will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Scrollable List for Patients -->
+        <div class="scrollable-list">
+            <h2>Patients</h2>
+            <div class="scroll-list" style="overflow-y: auto; flex: 1;">
+                <!-- Table to display patient information -->
+                <table id="patientTable">
+                    <thead>
+                    <tr>
+                        <th>Patient Name</th>
+                        <th>Patient Email</th>
+                        <th>Assigned Doctor</th>
+                    </tr>
+                    </thead>
+                    <tbody id="patientListAdmin">
+                    <!-- Patient rows will be inserted here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button class="button" onclick="showRegisterFormAdmin()">Add User</button>
     </div>
 
-    <script src="app.js">
-    </script>
+
+
+
+
+    <script src="navigation.js"></script>
+    <script src="functions.js"></script>
     </body>
     </html>

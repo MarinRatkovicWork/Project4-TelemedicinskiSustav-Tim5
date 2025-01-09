@@ -33,22 +33,20 @@ public class AuthController {
     @Autowired
     private AdminRepository adminRepository;
 
-
     @PostMapping("/register-admin")
     public ResponseEntity<?> registerAdmin(@RequestBody Admin newAdmin) {
-        // Provjera da li admin s istim emailom već postoji
+        // Check if admin with the same email already exists
         Optional<Admin> existingAdmin = adminRepository.findByEmail(newAdmin.getEmail());
         if (existingAdmin.isPresent()) {
             return ResponseEntity.badRequest().body("Email already in use!");
         }
 
-        // Ako email nije zauzet, spremanje novog admina u bazu
+        // If email is not taken, save the new admin
         adminRepository.save(newAdmin);
         return ResponseEntity.ok("Admin registered successfully.");
     }
 
-    // Generate JWT Token using a secure key
-    public String generateJwtToken(String email) {
+    public String generateJwtToken(String email, String role) {
         long expirationTime = 1000 * 60 * 60 * 10; // 10 hours
 
         // Use a fixed secret key for both signing and validation
@@ -56,11 +54,13 @@ public class AuthController {
 
         return Jwts.builder()
                 .setSubject(email)
+                .claim("role", role)  // Add role information to the token
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(secretKey) // Use the same secret key to sign the token
+                .signWith(secretKey)
                 .compact();
     }
+
 
     // Extract email from the JWT Token
     public String extractEmailFromToken(String token) {
@@ -80,30 +80,31 @@ public class AuthController {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 
-        // Check in the admin databases
+        // Check in the admin database
         Optional<Admin> existingAdmin = adminRepository.findByEmail(email);
         if (existingAdmin.isPresent() && existingAdmin.get().getPassword().equals(password)) {
-            String token = generateJwtToken(email); // Generate JWT token
-            return ResponseEntity.ok("Admin : Token: " + token);
+            String token = generateJwtToken(email, "Admin"); // Add role
+            return ResponseEntity.ok("Admin - Token: " + token);
         }
 
         // Check in the doctor database
         Optional<Doctor> existingDoctor = doctorRepository.findByEmail(email);
         if (existingDoctor.isPresent() && existingDoctor.get().getPassword().equals(password)) {
-            String token = generateJwtToken(email); // Generate JWT token
-            return ResponseEntity.ok("Doctor : Token: " + token);
+            String token = generateJwtToken(email, "Doctor"); // Add role
+            return ResponseEntity.ok("Doctor - Token: " + token);
         }
 
         // Check in the patient database
         Optional<Patient> existingPatient = patientRepository.findByEmail(email);
         if (existingPatient.isPresent() && existingPatient.get().getPassword().equals(password)) {
-            String token = generateJwtToken(email); // Generate JWT token
-            return ResponseEntity.ok("Patient : Token: " + token);
+            String token = generateJwtToken(email, "Patient"); // Add role
+            return ResponseEntity.ok("Patient - Token: " + token);
         }
 
         // If no match found for email and password
         return ResponseEntity.status(401).body("Invalid email or password!");
     }
+
 
     // Register method for adding doctors and patients
     @PostMapping("/register")
@@ -146,6 +147,14 @@ public class AuthController {
                 if (type.equalsIgnoreCase("patient")) {
                     // Handle patient registration
                     Patient patient = new ObjectMapper().convertValue(data, Patient.class);
+
+                    // If doctor is not provided, don't set it
+                    if (data.containsKey("doctor")) {
+                        Long doctorId = Long.valueOf(data.get("doctor").toString());
+                        Optional<Doctor> doctor = doctorRepository.findById(doctorId);
+                        doctor.ifPresent(patient::setDoctor);
+                    }
+
                     patientRepository.save(patient);
                     return ResponseEntity.ok("Patient registered successfully by admin.");
                 } else if (type.equalsIgnoreCase("doctor")) {
@@ -161,7 +170,7 @@ public class AuthController {
             }
         }
 
-        // Doctor registration
+        // Other role registration logic (doctor)
         else if (role.equalsIgnoreCase("doctor")) {
             if (existingDoctor.isPresent()) {
                 // Check if the email already exists in Patient repository
@@ -176,6 +185,10 @@ public class AuthController {
                 if (type.equalsIgnoreCase("patient")) {
                     // Handle patient registration by doctor
                     Patient patient = new ObjectMapper().convertValue(data, Patient.class);
+
+                    // Doctors should always be able to register patients
+                    patient.setDoctor(existingDoctor.get());
+
                     patientRepository.save(patient);
                     return ResponseEntity.ok("Patient registered successfully by doctor.");
                 } else {
@@ -189,4 +202,3 @@ public class AuthController {
         }
     }
 }
-

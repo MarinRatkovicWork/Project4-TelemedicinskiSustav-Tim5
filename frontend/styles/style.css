@@ -279,3 +279,134 @@
         .password-input-wrapper input[type="text"] {
             padding-right: 40px;
         }
+
+        /* Add styles to the role buttons */
+        .role-button {
+            width: 48%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: back;
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+
+        .role-button.active {
+            background-color: #007BFF;
+            color: white;
+            border-color: #007BFF;
+        }
+
+        .button-container {
+            margin-top: 10px;
+        }
+
+        .button.full-width {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: back;
+            border: none;
+        }
+/* General table styles */
+#doctorTable {
+    width: 100%; /* Table takes the full width of its container */
+    border-collapse: collapse; /* Collapse table borders */
+    margin-top: 20px; /* Add margin above the table */
+    background-color: #f9f9f9; /* Light gray background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+/* Table header styles */
+#doctorTable th {
+    padding: 12px; /* Padding for header cells */
+    text-align: center; /* Center the header text */
+    background-color: #4CAF50; /* Green background color for the header */
+    color: white; /* White text color for header */
+    font-weight: bold; /* Bold header text */
+    border: 1px solid #ddd; /* Light border around header */
+}
+
+/* Table row styles */
+#doctorTable td {
+    padding: 10px 15px; /* Padding for table data cells */
+    text-align: center; /* Center the text in data cells */
+    border: 1px solid #ddd; /* Light border around data cells */
+}
+
+/* Table row hover effect */
+#doctorTable tr:hover {
+    background-color: #f1f1f1; /* Change background on hover */
+}
+
+/* Style for the scrollable container */
+.scrollable-list {
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    margin-top: 20px;
+}
+
+/* Adding responsiveness for smaller screen sizes */
+@media screen and (max-width: 768px) {
+    #doctorTable {
+        width: 100%; /* Ensure table takes full width on small screens */
+    }
+
+    #doctorTable th, #doctorTable td {
+        padding: 8px; /* Reduce padding on small screens */
+    }
+}
+/* General table styles for Patients */
+#patientTable {
+    width: 100%; /* Table takes the full width of its container */
+    border-collapse: collapse; /* Collapse table borders */
+    margin-top: 20px; /* Add margin above the table */
+    background-color: #f9f9f9; /* Light gray background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+/* Table header styles for Patients */
+#patientTable th {
+    padding: 12px; /* Padding for header cells */
+    text-align: center; /* Center the header text */
+    background-color: #2196F3; /* Blue background color for the header */
+    color: white; /* White text color for header */
+    font-weight: bold; /* Bold header text */
+    border: 1px solid #ddd; /* Light border around header */
+}
+
+/* Table row styles for Patients */
+#patientTable td {
+    padding: 10px 15px; /* Padding for table data cells */
+    text-align: center; /* Center the text in data cells */
+    border: 1px solid #ddd; /* Light border around data cells */
+}
+
+/* Table row hover effect for Patients */
+#patientTable tr:hover {
+    background-color: #f1f1f1; /* Change background on hover */
+}
+
+/* Style for the scrollable container for Patients */
+.scrollable-list {
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    margin-top: 20px;
+}
+
+/* Adding responsiveness for smaller screen sizes */
+@media screen and (max-width: 768px) {
+    #patientTable {
+        width: 100%; /* Ensure table takes full width on small screens */
+    }
+
+    #patientTable th, #patientTable td {
+        padding: 8px; /* Reduce padding on small screens */
+    }
+}

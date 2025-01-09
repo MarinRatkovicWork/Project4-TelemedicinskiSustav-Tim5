@@ -13,7 +13,10 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String firstName; // Renamed from 'name' to 'firstName'
+
+    @Column(nullable = false)
+    private String lastName; // Renamed from 'surname' to 'lastName'
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -30,12 +33,15 @@ public class Patient {
     @JsonManagedReference
     private List<HealthRecord> healthRecords;
 
+    // Default constructor
     public Patient() {
     }
 
-    public Patient(Long id, String name, String email, String password, Doctor doctor, List<HealthRecord> healthRecords) {
+    // Parameterized constructor
+    public Patient(Long id, String firstName, String lastName, String email, String password, Doctor doctor, List<HealthRecord> healthRecords) {
         this.id = id;
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName; // Updated field
         this.email = email;
         this.password = password;
         this.doctor = doctor;
@@ -43,6 +49,7 @@ public class Patient {
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -51,12 +58,20 @@ public class Patient {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() { // Updated getter method
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) { // Updated setter method
+        this.firstName = firstName;
+    }
+
+    public String getLastName() { // Updated getter method
+        return lastName;
+    }
+
+    public void setLastName(String lastName) { // Updated setter method
+        this.lastName = lastName;
     }
 
     public String getEmail() {
