@@ -1,211 +1,252 @@
 <!DOCTYPE html>
-<html lang="hr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telemed App</title>
-    <link rel="stylesheet" href="styles/style.css">
-</head>
-<body>
-<!-- Login Screen -->
-<div class="container" id="loginScreen">
-    <div class="header">
-        <h1>Login</h1>
-    </div>
-    <div class="login-options">
-        <div class="login-option" onclick="setLoginType('patient')">Patient</div>
-        <div class="login-option" onclick="setLoginType('doctor')">Doctor</div>
-    </div>
-    <form onsubmit="return false;">
-        <div class="input-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Unesite email">
-        </div>
-        <div class="input-group">
-            <label for="password">Lozinka</label>
-            <input type="password" id="password" placeholder="Unesite lozinku">
-        </div>
-        <button class="button" onclick="login()">Prijava</button>
-    </form>
-    <!-- Add Register Navigation on Login Screen -->
-    <div class="login-footer">
-        <p>Don't have an account? <button class="link-button" onclick="showRegisterScreen()">Register Here</button></p>
-    </div>
-</div>
-<!-- Patient Dashboard -->
-<div class="container" id="dashboardScreen" style="display: none;">
-    <div class="header">
-        <h1>Your Health</h1>
-        <button class="button button-secondary" onclick="logout()">Logout</button>
-    </div>
-    <div class="metrics-grid">
-        <div class="metric-card" onclick="quickAddHeartRate()">
-            <div class="icon">❤️</div>
-            <div class="label">Heart Rate</div>
-        </div>
-        <div class="metric-card" onclick="quickAddBloodPressure()">
-            <div class="icon">🩺</div>
-            <div class="label">Blood Pressure</div>
+    <html lang="hr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Telemed App</title>
+        <link rel="stylesheet" href="styles/style.css">
+        <style>
+
+        </style>
+    </head>
+    <body>
+    <!-- Loader -->
+    <div id="loader" class="loader-container" style="display: none;">
+        <div class="loader">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
         </div>
     </div>
-    <h2>Recent Records</h2>
-    <table class="health-data-table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Heart Rate</th>
-            <th>Blood Pressure</th>
-            <th>Blood Sugar</th>
-        </tr>
-        </thead>
-        <tbody id="recentRecordsBody">
-        </tbody>
-    </table>
-    <button class="button" onclick="showHealthMetrics()">Add Health Data</button>
-    <button class="button button-secondary" onclick="showPreviousData()">View All Data</button>
-</div>
 
-
-
-
-<!-- Health Metrics Input -->
-<div class="container" id="metricsScreen" style="display: none;">
-    <div class="header">
-        <button class="back-button" onclick="showDashboard()">←</button>
-        <h1>Input Health Metrics</h1>
-    </div>
-    <form onsubmit="return false;">
-        <div class="input-group">
-            <label for="heartRate">Heart Rate (bpm)</label>
-            <input type="number" id="heartRate">
+    <!-- Login Screen -->
+    <div class="container" id="loginScreen">
+        <div class="header">
+            <h1>Login</h1>
         </div>
-        <div class="input-group">
-            <label for="bloodPressure">Blood Pressure (mmHg)</label>
-            <input type="text" id="bloodPressure" placeholder="120/80">
-        </div>
-        <div class="input-group">
-            <label for="bloodSugar">Blood Sugar (mg/dL)</label>
-            <input type="number" id="bloodSugar">
-        </div>
-        <button class="button" onclick="addHealthRecord()">Save</button>
-    </form>
-</div>
-
-
-
-<!-- Doctor's Dashboard -->
-<div class="container" id="doctorScreen" style="display: none;">
-    <div class="header">
-        <h1>Patient List</h1>
-        <button class="button button-secondary" onclick="logout()">Logout</button>
-    </div>
-    <div id="patientList"></div>
-    <button class="button" onclick="showAddPatientForm()">Add New Patient</button>
-</div>
-
-
-
-<!-- Success Screen -->
-<div class="container" id="successScreen" style="display: none;">
-    <div class="header">
-        <button class="back-button" onclick="showDashboard()">←</button>
-        <h1>Data Submitted</h1>
-    </div>
-    <div class="success-message">
-        <h2>Thank you for updating your health data.</h2>
+        <form onsubmit="return false;">
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Unesite email">
+            </div>
+            <div class="input-group">
+                <label for="password">Lozinka</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" placeholder="Unesite lozinku">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password')">👁️</button>
+                </div>
+            </div>
+            <button class="button" onclick="login()">Prijava</button>
+        </form>
         <div class="button-group">
-            <button class="button" onclick="showDashboard()">Return to Dashboard</button>
-            <button class="button button-secondary" onclick="showHealthMetrics()">Add More Data</button>
+            <button class="button button-secondary" onclick="showRegisterForm()">Register</button>
+            <button class="button button-secondary" onclick="showChangePasswordForm()">Change Password</button>
         </div>
     </div>
-</div>
 
-<!-- Add New Patient Form -->
-<div class="container" id="addPatientScreen" style="display: none;">
-    <div class="header">
-        <button class="back-button" onclick="showDoctorDashboard()">←</button>
-        <h1>Add New Patient</h1>
+    <!-- Patient Dashboard -->
+    <div class="container" id="dashboardScreen" style="display: none;">
+        <div class="header">
+            <h1>Your Health</h1>
+            <button class="button button-secondary" onclick="logout()">Logout</button>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-card" onclick="quickAddHeartRate()">
+                <div class="icon">❤️</div>
+                <div class="label">Heart Rate</div>
+            </div>
+            <div class="metric-card" onclick="quickAddBloodPressure()">
+                <div class="icon">🩺</div>
+                <div class="label">Blood Pressure</div>
+            </div>
+        </div>
+        <h2>Recent Records</h2>
+        <table class="health-data-table">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Heart Rate</th>
+                <th>Blood Pressure</th>
+                <th>Blood Sugar</th>
+            </tr>
+            </thead>
+            <tbody id="recentRecordsBody">
+            <!-- Recent data will be populated here -->
+            </tbody>
+        </table>
+        <button class="button" onclick="showHealthMetrics()">Add Health Data</button>
+        <button class="button button-secondary" onclick="showPreviousData()">View All Data</button>
+        <button class="button button-secondary" onclick="showChangePasswordForm()">Change Password</button>
+        <button class="button button-secondary" onclick="viewPassword()">View Password</button>
     </div>
-    <form onsubmit="return false;">
-        <div class="input-group">
-            <label for="newPatientName">Name</label>
-            <input type="text" id="newPatientName" placeholder="Enter patient name">
-        </div>
-        <div class="input-group">
-            <label for="newPatientEmail">Email</label>
-            <input type="email" id="newPatientEmail" placeholder="Enter patient email">
-        </div>
-        <button class="button" onclick="addNewPatient()">Add Patient</button>
-    </form>
-</div>
 
-<!-- Previous Health Data Screen -->
-<div class="container" id="previousDataScreen" style="display: none;">
-    <div class="header">
-        <button class="back-button" onclick="showDashboard()">←</button>
-        <h1>Previous Health Data</h1>
+    <!-- Doctor's Dashboard -->
+    <div class="container" id="doctorScreen" style="display: none;">
+        <div class="header">
+            <h1>Patient List</h1>
+            <button class="button button-secondary" onclick="logout()">Logout</button>
+        </div>
+        <div id="patientList"></div>
+        <button class="button" onclick="showRegisterForm()">Add New Patient</button>
     </div>
-    <table class="health-data-table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Heart Rate</th>
-            <th>Blood Pressure</th>
-            <th>Blood Sugar</th>
-        </tr>
-        </thead>
-        <tbody id="healthDataBody">
-        </tbody>
-    </table>
-</div>
 
-<!-- Patient Health Records (for Doctor) -->
-<div class="container" id="patientRecordsScreen" style="display: none;">
-    <div class="header">
-        <button class="back-button" onclick="showDoctorDashboard()">←</button>
-        <h1 id="patientRecordsName"></h1>
+    <!-- Health Metrics Input -->
+    <div class="container" id="metricsScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showDashboard()">←</button>
+            <h1>Input Health Metrics</h1>
+        </div>
+        <form onsubmit="return false;">
+            <div class="input-group">
+                <label for="heartRate">Heart Rate (bpm)</label>
+                <input type="number" id="heartRate">
+            </div>
+            <div class="input-group">
+                <label for="bloodPressure">Blood Pressure (mmHg)</label>
+                <input type="text" id="bloodPressure" placeholder="120/80">
+            </div>
+            <div class="input-group">
+                <label for="bloodSugar">Blood Sugar (mg/dL)</label>
+                <input type="number" id="bloodSugar">
+            </div>
+            <button class="button" onclick="saveHealthData()">Save</button>
+        </form>
     </div>
-    <table class="health-data-table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Heart Rate</th>
-            <th>Blood Pressure</th>
-            <th>Blood Sugar</th>
-        </tr>
-        </thead>
-        <tbody id="patientHealthDataBody">
-        </tbody>
-    </table>
-</div>
 
-<!-- Register Screen -->
-<div class="container" id="registerScreen" style="display: none;">
-    <div class="header">
-        <h1>Register</h1>
+    <!-- Add New Patient Form -->
+    <div class="container" id="addPatientScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showDoctorDashboard()">←</button>
+            <h1>Add New Patient</h1>
+        </div>
+        <form onsubmit="return false;">
+            <div class="input-group">
+                <label for="newPatientName">Name</label>
+                <input type="text" id="newPatientName" placeholder="Enter patient name">
+            </div>
+            <div class="input-group">
+                <label for="newPatientEmail">Email</label>
+                <input type="email" id="newPatientEmail" placeholder="Enter patient email">
+            </div>
+            <div class="input-group">
+                <label for="newPatientPassword">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="newPatientPassword" placeholder="Enter patient password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPatientPassword')">👁️</button>
+                </div>
+            </div>
+            <button class="button" onclick="addNewPatient()">Add Patient</button>
+        </form>
     </div>
-    <form onsubmit="return false;">
-        <div class="input-group">
-            <label for="registerName">Name</label>
-            <input type="text" id="registerName" placeholder="Enter your name">
-        </div>
-        <div class="input-group">
-            <label for="registerEmail">Email</label>
-            <input type="email" id="registerEmail" placeholder="Enter your email">
-        </div>
-        <div class="input-group">
-            <label for="registerPassword">Password</label>
-            <input type="password" id="registerPassword" placeholder="Enter your password">
-        </div>
-        <div class="input-group">
-            <label for="registerConfirmPassword">Confirm Password</label>
-            <input type="password" id="registerConfirmPassword" placeholder="Confirm your password!!!!!">
-        </div>
-        <button class="button" onclick="register()">Register</button>
-        <button class="button button-secondary" onclick="showLoginScreen()">Back to Login</button>
-    </form>
-</div>
 
-<script src="app.js"></script>
-</body>
-</html>
+    <!-- Previous Health Data Screen -->
+    <div class="container" id="previousDataScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showDashboard()">←</button>
+            <h1>Previous Health Data</h1>
+        </div>
+        <table class="health-data-table">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Heart Rate</th>
+                <th>Blood Pressure</th>
+                <th>Blood Sugar</th>
+            </tr>
+            </thead>
+            <tbody id="healthDataBody">
+            <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Patient Health Records (for Doctor) -->
+    <div class="container" id="patientRecordsScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showDoctorDashboard()">←</button>
+            <h1 id="patientRecordsName"></h1>
+        </div>
+        <table class="health-data-table">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Heart Rate</th>
+                <th>Blood Pressure</th>
+                <th>Blood Sugar</th>
+            </tr>
+            </thead>
+            <tbody id="patientHealthDataBody">
+            <!-- Patient data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Register Form -->
+    <div class="container" id="registerScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showLoginScreen()">←</button>
+            <h1>Register</h1>
+        </div>
+        <form onsubmit="return false;">
+            <div class="input-group">
+                <label for="registerName">Name</label>
+                <input type="text" id="registerName" placeholder="Enter name">
+            </div>
+            <div class="input-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Enter email">
+            </div>
+            <div class="input-group">
+                <label for="registerPassword">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="registerPassword" placeholder="Enter password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPassword')">👁️</button>
+                </div>
+            </div>
+            <button class="button" onclick="register()">Register</button>
+        </form>
+    </div>
+
+    <!-- Change Password Form -->
+    <div class="container" id="changePasswordScreen" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showLoginScreen()">←</button>
+            <h1>Change Password</h1>
+        </div>
+        <form onsubmit="return false;">
+            <div class="input-group">
+                <label for="changePasswordEmail">Email</label>
+                <input type="email" id="changePasswordEmail" placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label for="currentPassword">Current Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="currentPassword" placeholder="Enter your current password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword')">👁️</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="newPassword">New Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="newPassword" placeholder="Enter your new password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword')">👁️</button>
+                </div>
+            </div>
+            <button class="button" onclick="changePassword()">Change Password</button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="container" id="adminScreen" style="display: none;">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <button class="button button-secondary" onclick="logout()">Logout</button>
+        </div>
+        <button class="button" onclick="showAddUserForm()">Add User</button>
+        <div id="userList"></div>
+    </div>
+
+    <script src="app.js">
+    </script>
+    </body>
+    </html>

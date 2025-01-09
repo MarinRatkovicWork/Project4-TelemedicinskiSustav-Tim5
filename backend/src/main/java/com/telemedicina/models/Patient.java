@@ -1,19 +1,30 @@
 package com.telemedicina.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
+// Patient Model
 @Entity
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    @JsonBackReference
+    private Doctor doctor;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     @JsonManagedReference
@@ -22,11 +33,12 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(Long id, String name, String email, String password, List<HealthRecord> healthRecords) {
+    public Patient(Long id, String name, String email, String password, Doctor doctor, List<HealthRecord> healthRecords) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.doctor = doctor;
         this.healthRecords = healthRecords;
     }
 
@@ -61,6 +73,14 @@ public class Patient {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
     public List<HealthRecord> getHealthRecords() {
