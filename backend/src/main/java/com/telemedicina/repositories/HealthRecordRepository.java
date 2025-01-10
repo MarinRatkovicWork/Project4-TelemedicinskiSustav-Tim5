@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface HealthRecordRepository extends JpaRepository<HealthRecord, Long> {
 
-    List<HealthRecord> findByPatientIdOrderByDateDesc(Long patientId);
+    // Update this method to use 'dateTime' instead of 'date'
+    List<HealthRecord> findByPatientIdOrderByDateTimeDesc(Long patientId);
 
-    List<HealthRecord> findTop10ByPatientIdOrderByDateDesc(Long patientId);
+    // Similarly, update this one as well
+    List<HealthRecord> findTop10ByPatientIdOrderByDateTimeDesc(Long patientId);
 }
+

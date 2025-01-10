@@ -431,8 +431,13 @@ async function loadAndDisplayRecentHealthRecords() {
 
             records.forEach(record => {
                 const row = document.createElement('tr');
+
+                // Format dateTime from LocalDateTime (ISO format) to a readable string
+                const date = new Date(record.dateTime);  // Converting the string to a Date object
+                const formattedDate = date.toLocaleString();  // You can customize this format as per your requirement
+
                 row.innerHTML = `
-                    <td>${record.date || 'N/A'}</td>
+                    <td>${formattedDate || 'N/A'}</td>
                     <td>${record.heartRate || 'N/A'}</td>
                     <td>${record.bloodPressure || 'N/A'}</td>
                     <td>${record.bloodSugar || 'N/A'}</td>
@@ -448,68 +453,64 @@ async function loadAndDisplayRecentHealthRecords() {
     }
 }
 
-async function addHealthRecord(patientId, healthRecord) {
+
+async function saveHealthData() {
+    // Get the values from the form
+    const heartRate = document.getElementById('heartRate').value;
+    const bloodPressure = document.getElementById('bloodPressure').value;
+    const bloodSugar = document.getElementById('bloodSugar').value;
+
+    // Validate that the necessary fields are filled in
+    if (!heartRate || !bloodPressure || !bloodSugar) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    // Get the current user ID (you may have stored it in local storage or elsewhere)
+    const patientId = currentUser.id; // This should be set somewhere in your app, like after login
+
+    // Get the current date and time
+    const currentDateTime = new Date().toISOString();  // This will create an ISO 8601 string format "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+    // Create a health record object to send to the backend
+    const healthRecord = {
+        heartRate: heartRate,
+        bloodPressure: bloodPressure,
+        bloodSugar: bloodSugar,
+        dateTime: currentDateTime,  // Add current dateTime
+    };
+
     try {
+        // Get the token from local storage (if applicable)
         const token = localStorage.getItem('jwtToken');
-        const response = await fetch(`${apiUrl}/${patientId}/health-records`, {
+
+        // Send the POST request to the backend
+        const response = await fetch(`http://localhost:8080/api/patients/${patientId}/health-records`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(healthRecord)
+            body: JSON.stringify(healthRecord), // Send the health record data with dateTime
         });
 
+        // Handle the response from the backend
         if (response.ok) {
-            alert('Health record added successfully.');
-            fetchRecentHealthRecords(patientId); // Refresh the recent records
+            const savedRecord = await response.json();
+            alert("Health data saved successfully!");
+            console.log("Saved Record:", savedRecord);
+            // You might want to refresh the health record list here
+            loadAndDisplayRecentHealthRecords();
         } else {
-            console.error('Failed to add health record:', response.statusText);
-            alert('Unable to add health record.');
+            console.error('Failed to save health record:', response.statusText);
+            alert('Unable to save health data.');
         }
     } catch (error) {
-        console.error('Error adding health record:', error);
+        console.error('Error saving health record:', error);
+        alert('An error occurred while saving the health data.');
     }
 }
 
-// Example usage when adding a new health record
-function quickAddHeartRate() {
-    const patientId = localStorage.getItem('patientId'); // Prethodno spremljeni ID pacijenta
-    const healthRecord = {
-        heartRate: 72, // Primjer vrijednosti
-        date: new Date().toISOString().split('T')[0]
-    };
-    addHealthRecord(patientId, healthRecord);
-}
-
-
-
-async function fetchAllHealthRecords(patientId) {
-    try {
-        const token = localStorage.getItem('jwtToken');
-        const response = await fetch(`${apiUrl}/${patientId}/health-records`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const records = await response.json();
-            displayAllHealthRecords(records);
-        } else {
-            console.error('Failed to fetch all health records:', response.statusText);
-            alert('Unable to fetch all health records.');
-        }
-    } catch (error) {
-        console.error('Error fetching all health records:', error);
-    }
-}
-
-function displayAllHealthRecords(records) {
-    // Implement a modal or new screen for displaying all records
-    console.log('All records:', records);
-}
 
 
 
@@ -535,30 +536,6 @@ function displayAllHealthRecords(records) {
 function viewPatientDetails(patientId) {
     alert(`Patient details for ID: ${patientId}`); // Zamijenite s navigacijom ili prikazom u modalnom prozoru
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Function to show success popup
 function showSuccessPopup(message) {

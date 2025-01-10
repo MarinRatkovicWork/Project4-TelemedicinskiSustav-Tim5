@@ -2,7 +2,7 @@ package com.telemedicina.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime; // Promijenjen na LocalDateTime
 
 @Entity
 public class HealthRecord {
@@ -10,7 +10,9 @@ public class HealthRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
+    @Column(name = "date_time")  // If the column name is 'date_time' in the DB
+    private LocalDateTime dateTime;  // Promijenjeno na LocalDateTime
+
     private Integer heartRate;
     private String bloodPressure;
     private Integer bloodSugar;
@@ -20,19 +22,21 @@ public class HealthRecord {
     @JsonBackReference
     private Patient patient;
 
+    // Default konstruktor
     public HealthRecord() {
     }
 
-    public HealthRecord(Long id, LocalDate date, Integer heartRate, String bloodPressure, Integer bloodSugar, Patient patient) {
+    // Konstruktor s parametrima
+    public HealthRecord(Long id, LocalDateTime dateTime, Integer heartRate, String bloodPressure, Integer bloodSugar, Patient patient) {
         this.id = id;
-        this.date = date;
+        this.dateTime = dateTime;  // Promijenjeno na LocalDateTime
         this.heartRate = heartRate;
         this.bloodPressure = bloodPressure;
         this.bloodSugar = bloodSugar;
         this.patient = patient;
     }
 
-    // Getters and Setters
+    // Getters i Setters
     public Long getId() {
         return id;
     }
@@ -41,12 +45,12 @@ public class HealthRecord {
         this.id = id;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDateTime getDateTime() {
+        return dateTime;  // Promijenjeno na LocalDateTime
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;  // Promijenjeno na LocalDateTime
     }
 
     public Integer getHeartRate() {
@@ -80,4 +84,5 @@ public class HealthRecord {
     public void setPatient(Patient patient) {
         this.patient = patient;
     }
+
 }

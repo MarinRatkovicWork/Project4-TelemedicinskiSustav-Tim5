@@ -17,12 +17,14 @@ public class HealthRecordService {
         this.healthRecordRepository = healthRecordRepository;
     }
 
+    // Update method to use 'dateTime'
     public List<HealthRecord> getAllHealthRecordsByPatientId(Long patientId) {
-        return healthRecordRepository.findByPatientIdOrderByDateDesc(patientId);
+        return healthRecordRepository.findByPatientIdOrderByDateTimeDesc(patientId);
     }
 
+    // Update method to use 'dateTime'
     public List<HealthRecord> getLast10HealthRecordsByPatientId(Long patientId) {
-        return healthRecordRepository.findTop10ByPatientIdOrderByDateDesc(patientId);
+        return healthRecordRepository.findTop10ByPatientIdOrderByDateTimeDesc(patientId);
     }
 
     public HealthRecord addHealthRecord(HealthRecord healthRecord) {
@@ -36,7 +38,7 @@ public class HealthRecordService {
     public HealthRecord updateHealthRecord(Long recordId, HealthRecord updatedRecord) {
         HealthRecord existingRecord = healthRecordRepository.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("Health record not found"));
-        existingRecord.setDate(updatedRecord.getDate());
+        existingRecord.setDateTime(updatedRecord.getDateTime());
         existingRecord.setHeartRate(updatedRecord.getHeartRate());
         existingRecord.setBloodPressure(updatedRecord.getBloodPressure());
         existingRecord.setBloodSugar(updatedRecord.getBloodSugar());

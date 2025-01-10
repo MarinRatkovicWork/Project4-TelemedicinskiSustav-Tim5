@@ -46,6 +46,7 @@ public class PatientController {
     @GetMapping("/{patientId}/health-records")
     public List<HealthRecord> getAllHealthRecords(@PathVariable Long patientId) {
         return healthRecordService.getAllHealthRecordsByPatientId(patientId);
+
     }
 
     // Endpoint to get the last 10 health records by date
