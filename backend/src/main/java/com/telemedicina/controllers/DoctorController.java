@@ -1,15 +1,13 @@
 package com.telemedicina.controllers;
 
 import com.telemedicina.models.Doctor;
+import com.telemedicina.models.HealthRecord;
 import com.telemedicina.models.Patient;
 import com.telemedicina.services.DoctorService;
 import com.telemedicina.services.AuthService;
 import com.telemedicina.services.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,4 +51,58 @@ public class DoctorController {
             throw new RuntimeException("You are not authorized to access this resource.");
         }
     }
+
+    @GetMapping("/patients/{patientId}/records")
+    public List<HealthRecord> getPatientHealthRecords(
+            @RequestHeader("Authorization") String authToken,
+            @PathVariable Long patientId) {
+
+        // Verifikujte token i dobijte ID doktora
+        Long doctorId = authService.getAuthenticatedDoctorId(authToken);
+
+        if (doctorId != null) {
+            // Proverite da li pacijent pripada doktoru
+            if (patientService.isPatientAssignedToDoctor(patientId, doctorId)) {
+                return patientService.getHealthRecordsByPatientId(patientId);
+            } else {
+                throw new RuntimeException("You are not authorized to access this patient's records.");
+            }
+        } else {
+            throw new RuntimeException("You are not authorized to access this resource.");
+        }
+    }
+
+    @DeleteMapping("/patients/{patientId}")
+    public String deletePatientFromDoctorList(
+            @RequestHeader("Authorization") String authToken,
+            @PathVariable Long patientId) {
+
+        // Verify doctor authorization
+        Long doctorId = authService.getAuthenticatedDoctorId(authToken);
+
+        if (doctorId == null) {
+            throw new RuntimeException("You are not authorized to perform this action.");
+        }
+
+        // Find patient and doctor
+        Patient patient = patientService.getPatientById(patientId);
+        Doctor doctor = doctorService.getDoctorById(doctorId);
+
+        if (patient == null || doctor == null) {
+            throw new RuntimeException("Patient or Doctor not found.");
+        }
+
+        // Remove patient from doctor's list
+        doctor.getPatients().remove(patient);
+
+        // Set the doctor field in patient to null
+        patient.setDoctor(null);
+
+        // Save updated doctor and patient
+        doctorService.saveDoctor(doctor);
+        patientService.savePatient(patient);
+
+        return "Patient removed from doctor's list successfully.";
+    }
+
 }

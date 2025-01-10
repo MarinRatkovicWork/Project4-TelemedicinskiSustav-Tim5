@@ -39,7 +39,7 @@
             <button class="button" onclick="login()">Prijava</button>
         </form>
         <div class="button-group">
-            <button class="button button-secondary" onclick="showRegisterForm()">Register</button>
+
             <button class="button button-secondary" onclick="showChangePasswordForm()">Change Password</button>
         </div>
     </div>
@@ -188,22 +188,37 @@
     <div class="container" id="patientRecordsScreen" style="display: none;">
         <div class="header">
             <button class="back-button" onclick="showDoctorDashboard()">←</button>
+            <h1 >Patient: </h1>
             <h1 id="patientRecordsName"></h1>
+
         </div>
-        <table class="health-data-table">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Heart Rate</th>
-                <th>Blood Pressure</th>
-                <th>Blood Sugar</th>
-            </tr>
-            </thead>
-            <tbody id="patientHealthDataBody">
-            <!-- Patient data will be populated here -->
-            </tbody>
-        </table>
+
+        <!-- Scrollable area for health data -->
+        <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="health-data-table">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Heart Rate</th>
+                    <th>Blood Pressure</th>
+                    <th>Blood Sugar</th>
+                </tr>
+                </thead>
+                <tbody id="patientHealthDataBody">
+                <!-- Patient data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Buttons under the scrollable area -->
+        <div style="margin-top: 20px;">
+            <!-- Red button to delete the patient from the list -->
+            <button id="deletePatientButton" onclick="deletePatientFromDoctorList()" class="delete-button">
+                Delete This Patient From Your List
+            </button>
+        </div>
     </div>
+
 
 
     <!-- Register Form for Doctor to Register Patient -->
@@ -382,7 +397,7 @@
 
 
 
-    <script src="navigation.js"></script>
+    <script src="scripts/navigation.js"></script>
     <script src="scripts/login.js"></script>   <!-- Login skripta -->
     <script src="scripts/admin.js"></script>   <!-- Admin funkcionalnost -->
     <script src="scripts/patient.js"></script>  <!-- Pacijent funkcionalnost -->

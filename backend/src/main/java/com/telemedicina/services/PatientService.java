@@ -1,5 +1,6 @@
 package com.telemedicina.services;
 
+import com.telemedicina.models.HealthRecord;
 import com.telemedicina.models.Patient;
 import com.telemedicina.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,21 @@ public class PatientService {
     public Patient getPatientById(Long patientId) {
         return patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found with ID: " + patientId));
+    }
+
+    public boolean isPatientAssignedToDoctor(Long patientId, Long doctorId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        return patient.getDoctor().getId().equals(doctorId);
+    }
+
+    public List<HealthRecord> getHealthRecordsByPatientId(Long patientId) {
+        Patient patient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        return patient.getHealthRecords(); // Pretpostavka: Patient entitet ima povezane HealthRecord objekte
+    }
+    public void savePatient(Patient patient) {
+        patientRepository.save(patient);
     }
 }
 

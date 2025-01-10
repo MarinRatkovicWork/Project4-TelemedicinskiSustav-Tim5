@@ -124,3 +124,8 @@ function showPreviousData() {
             hideLoader();
         }, 1000);
     }
+// Funkcija za prikaz ekrana sa zdravstvenim podacima
+function showPatientRecordsScreen() {
+    document.getElementById('doctorScreen').style.display = 'none';
+    document.getElementById('patientRecordsScreen').style.display = 'block';
+}

@@ -464,3 +464,15 @@
 .delete-button:hover {
     background-color: darkred;
 }
+.delete-button {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
