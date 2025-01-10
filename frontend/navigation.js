@@ -28,7 +28,7 @@ function showDoctorDashboard() {
     setTimeout(() => {
         hideAllScreens();
         document.getElementById('doctorScreen').style.display = 'block';
-        displayPatientList();
+        loadPatientList();
         displayUserInfo('doctorScreen');
         hideLoader();
     }, 1000);
@@ -40,7 +40,7 @@ function showDashboard() {
     setTimeout(() => {
         hideAllScreens();
         document.getElementById('dashboardScreen').style.display = 'block';
-        displayRecentRecords();
+        loadAndDisplayRecentHealthRecords()
         displayUserInfo('dashboardScreen');
         hideLoader();
     }, 1000);
@@ -52,6 +52,11 @@ function showRegisterFormDoctor() {
     document.getElementById('registerScreenDoctor').style.display = 'block';
 }
 
+function showHealthRecordInputScreen() {
+    hideAllScreens();
+    document.getElementById('healthRecordInputScreen').style.display = 'block';
+}
+
 // Function to show Register Form for Admin
 function showRegisterFormAdmin() {
     hideAllScreens();
@@ -60,7 +65,7 @@ function showRegisterFormAdmin() {
 
 // Function to hide all screens
 function hideAllScreens() {
-    const screens = ['loginScreen', 'dashboardScreen', 'metricsScreen', 'doctorScreen',
+    const screens = ['loginScreen', 'dashboardScreen', 'healthRecordInputScreen', 'doctorScreen',
         'previousDataScreen', 'addPatientScreen', 'patientRecordsScreen',
         'registerScreenDoctor', 'registerScreenAdmin', 'changePasswordScreen', 'adminScreen'];
     screens.forEach(screen => {

@@ -21,31 +21,84 @@ async function login() {
                 body: JSON.stringify({ email, password })
             });
 
-            // We now handle the response as a plain text string, not JSON
-            const data = await response.text();
-
+            const data = await response.text(); // Server response as plain text
             console.log('Login response received');
             hideLoader();
 
             if (response.ok) {
                 console.log('Login successful');
 
-                // Determine the role and token from the response string
+                // Extract role and token
                 const role = data.includes('Admin') ? 'Admin' : data.includes('Doctor') ? 'Doctor' : 'Patient';
                 const token = data.split(": ")[1]; // Extract the token part
 
+                // Initialize currentUser
                 currentUser = {
                     email,
                     role,
-                    token
+                    token,
+                    id: null,  // Place holder for ID to be added later
                 };
                 console.log(`Role determined: ${currentUser.role}`);
 
-                // Store the JWT token in localStorage
+                // Store JWT token in localStorage
                 localStorage.setItem('jwtToken', currentUser.token);
                 console.log('JWT token saved to localStorage');
 
-                // Redirect user based on their role
+                // Fetch user ID if the role is Doctor or Patient
+                if (currentUser.role === 'Doctor') {
+                    console.log('Fetching user ID...');
+                    try {
+                        const idResponse = await fetch(`${apiUrl}/doctor-id?email=${encodeURIComponent(email)}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+
+                        if (idResponse.ok) {
+                        console.log(' fetch user ID');
+                            const idData = await idResponse.json();
+                            // Add the ID to currentUser as a new property
+                            currentUser.id = idData.doctorId; // Assuming response contains "doctorId"
+                            console.log(`User ID fetched: ${currentUser.id}`);
+                        } else {
+                            console.log('Failed to fetch user ID');
+                            alert('Unable to retrieve user ID. Please try again later.');
+                        }
+                    } catch (idError) {
+                        console.log('Error fetching user ID:', idError);
+                        alert('An error occurred while fetching user ID.');
+                    }
+                }else if (currentUser.role === 'Patient') {
+                      console.log('Fetching patient ID...');
+                      try {
+                          const idResponse = await fetch(`${apiUrl}/patient-id?email=${encodeURIComponent(email)}`, {
+                              method: 'GET',
+                              headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': `Bearer ${token}`,
+                              },
+                          });
+
+                          if (idResponse.ok) {
+                              console.log('Patient ID fetched successfully');
+                              const idData = await idResponse.json();
+                              // Add the ID to currentUser as a new property
+                              currentUser.id = idData.patientId; // Assuming response contains "patientId"
+                              console.log(`User ID fetched: ${currentUser.id}`);
+                          } else {
+                              console.log('Failed to fetch patient ID');
+                              alert('Unable to retrieve patient ID. Please try again later.');
+                          }
+                      } catch (idError) {
+                          console.log('Error fetching patient ID:', idError);
+                          alert('An error occurred while fetching patient ID.');
+                      }
+                }
+
+                // Redirect based on role
                 if (currentUser.role === 'Admin') {
                     console.log('Redirecting to Admin Dashboard...');
                     showAdminDashboard();
@@ -70,6 +123,7 @@ async function login() {
         alert('Please enter both email and password');
     }
 }
+
 
 /****************************************************************************************
 *******************************************************************************************
@@ -227,8 +281,260 @@ async function getPatients() {
 *******************************************************************************************
 *************************************Doctor Functions**************************************/
 
+async function registerPatientByDoctor() {
+    // Get input values for patient registration form
+    const firstName = document.getElementById("registerFirstNamePatient").value.trim();
+    const lastName = document.getElementById("registerLastNamePatient").value.trim();
+    const email = document.getElementById("registerEmailPatient").value.trim();
+    const password = document.getElementById("registerPasswordPatient").value.trim();
+    const doctorId = currentUser.id;
+
+    // Check if all required fields are filled
+    if (!firstName || !lastName || !email || !password) {
+        alert("Please fill out all required fields.");
+        console.log("Form validation failed: Missing required fields.");
+        return;
+    }
+
+    // Prepare the payload data to send to the server
+    const payload = {
+        role: currentUser.role,  // Role of the current user (should be 'doctor')
+        type: "patient",         // Type of entity to register ('patient')
+        data: {
+            firstName,
+            lastName,
+            email,
+            password,
+            doctor: {
+                        id: currentUser.id|| null // Include doctor ID if available
+                    }
+        }
+    };
+
+    // Log the payload being sent to the server for debugging
+    console.log("Payload to be sent:", JSON.stringify(payload, null, 2));
+
+    // Fetch the JWT token for authentication from localStorage
+    const authToken = localStorage.getItem("jwtToken");
+    if (!authToken) {
+        alert("Authorization token is missing. Please log in first.");
+        console.log("Authorization token is missing.");
+        return;
+    }
+
+    // Define the backend URL for registering patients
+    const url = `http://localhost:8080/api/auth/register?role=doctor`;
+
+    try {
+        // Log the URL and the headers being used for the request
+        console.log("Sending POST request to:", url);
+        console.log("Request headers:", {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+        });
+
+        // Send the POST request to register the patient
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${authToken}`,
+            },
+            body: JSON.stringify(payload),  // Send the payload as the request body
+        });
+
+        // Log the response status and text
+        const responseText = await response.text();
+        console.log("Response Status:", response.status);
+        console.log("Response Text:", responseText);
+
+        // Handle the response based on whether the request was successful
+        if (response.ok) {
+            alert(responseText); // Show success message directly from the response
+            console.log("Patient registered successfully:", responseText);
+        } else {
+            alert("Error: " + responseText); // Show error message directly from the response
+            console.log("Error during registration:", responseText);
+        }
+    } catch (error) {
+        // Log any unexpected errors
+        console.error("Error during registration:", error);
+        alert("An error occurred. Please try again.");
+    }
+}
 
 
+
+// Funkcija za dohvat liste pacijenata za doktora
+async function loadPatientList() {
+    try {
+        // Dohvati auth token iz localStorage
+        const authToken = localStorage.getItem("jwtToken");
+        if (!authToken) {
+            alert("Authorization token is missing. Please log in first.");
+            return;
+        }
+
+        // Pošalji zahtjev na backend API
+        const response = await fetch('http://localhost:8080/api/doctors/patients', {
+            method: 'GET',
+            headers: {
+                'Authorization': authToken,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Provjeri status odgovora
+        if (!response.ok) {
+            throw new Error('Error fetching patient list: ' + response.statusText);
+        }
+
+        // Parsiraj odgovor u JSON
+        const patients = await response.json();
+
+        // Prikaz pacijenata u HTML elementima
+        const patientListElement = document.getElementById('patientList');
+        patientListElement.innerHTML = ''; // Očisti listu prije dodavanja novih stavki
+
+        patients.forEach(patient => {
+            const li = document.createElement('li');
+            li.className = 'patient-item';
+            li.textContent = `${patient.firstName} ${patient.lastName} - ${patient.email}`;
+            patientListElement.appendChild(li);
+        });
+
+        console.log('Lista pacijenata prikazana:', patients);
+        return patients;
+
+    } catch (error) {
+        console.error('Došlo je do greške:', error);
+        alert('Došlo je do greške pri dohvaćanju liste pacijenata');
+    }
+}
+/****************************************************************************************
+*******************************************************************************************
+*************************************Patient Functions**************************************/
+async function loadAndDisplayRecentHealthRecords() {
+    try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch(`http://localhost:8080/api/patients/${currentUser.id}/health-records/recent`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const records = await response.json();
+            const tbody = document.getElementById('recentRecordsBody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.date || 'N/A'}</td>
+                    <td>${record.heartRate || 'N/A'}</td>
+                    <td>${record.bloodPressure || 'N/A'}</td>
+                    <td>${record.bloodSugar || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            console.error('Failed to fetch recent health records:', response.statusText);
+            alert('Unable to fetch recent health records.');
+        }
+    } catch (error) {
+        console.error('Error fetching recent health records:', error);
+    }
+}
+
+async function addHealthRecord(patientId, healthRecord) {
+    try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch(`${apiUrl}/${patientId}/health-records`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(healthRecord)
+        });
+
+        if (response.ok) {
+            alert('Health record added successfully.');
+            fetchRecentHealthRecords(patientId); // Refresh the recent records
+        } else {
+            console.error('Failed to add health record:', response.statusText);
+            alert('Unable to add health record.');
+        }
+    } catch (error) {
+        console.error('Error adding health record:', error);
+    }
+}
+
+// Example usage when adding a new health record
+function quickAddHeartRate() {
+    const patientId = localStorage.getItem('patientId'); // Prethodno spremljeni ID pacijenta
+    const healthRecord = {
+        heartRate: 72, // Primjer vrijednosti
+        date: new Date().toISOString().split('T')[0]
+    };
+    addHealthRecord(patientId, healthRecord);
+}
+
+
+
+async function fetchAllHealthRecords(patientId) {
+    try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch(`${apiUrl}/${patientId}/health-records`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const records = await response.json();
+            displayAllHealthRecords(records);
+        } else {
+            console.error('Failed to fetch all health records:', response.statusText);
+            alert('Unable to fetch all health records.');
+        }
+    } catch (error) {
+        console.error('Error fetching all health records:', error);
+    }
+}
+
+function displayAllHealthRecords(records) {
+    // Implement a modal or new screen for displaying all records
+    console.log('All records:', records);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function viewPatientDetails(patientId) {
+    alert(`Patient details for ID: ${patientId}`); // Zamijenite s navigacijom ili prikazom u modalnom prozoru
+}
 
 
 

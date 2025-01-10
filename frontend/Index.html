@@ -10,7 +10,7 @@
         </style>
     </head>
     <body>
-    <!-- Loader -->
+    <!--*********************** Loader **************************** -->
     <div id="loader" class="loader-container" style="display: none;">
         <div class="loader">
             <div class="loader-dot"></div>
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <!-- Login Screen -->
+    <!-- ************************ Login Screen **********************-->
     <div class="container" id="loginScreen">
         <div class="header">
             <h1>Login</h1>
@@ -44,7 +44,10 @@
         </div>
     </div>
 
-    <!-- Patient Dashboard -->
+    <!-- ********************** Patient Section ******************************-->
+    <!-- *********************************************************************-->
+    <!-- *********************************************************************-->
+    <!-- ********************** Patient Dashboard ******************************-->
     <div class="container" id="dashboardScreen" style="display: none;">
         <div class="header">
             <h1>Your Health</h1>
@@ -74,24 +77,14 @@
             <!-- Recent data will be populated here -->
             </tbody>
         </table>
-        <button class="button" onclick="showHealthMetrics()">Add Health Data</button>
+        <button class="button" onclick="showHealthRecordInputScreen()">Add Health Data</button>
         <button class="button button-secondary" onclick="showPreviousData()">View All Data</button>
         <button class="button button-secondary" onclick="showChangePasswordForm()">Change Password</button>
         <button class="button button-secondary" onclick="viewPassword()">View Password</button>
     </div>
 
-    <!-- Doctor's Dashboard -->
-    <div class="container" id="doctorScreen" style="display: none;">
-        <div class="header">
-            <h1>Patient List</h1>
-            <button class="button button-secondary" onclick="logout()">Logout</button>
-        </div>
-        <div id="patientList"></div>
-        <button class="button" onclick="showRegisterFormDoctor()">Add New Patient</button>
-    </div>
-
-    <!-- Health Metrics Input -->
-    <div class="container" id="metricsScreen" style="display: none;">
+    <!-- health record Input screen -->
+    <div class="container" id="healthRecordInputScreen" style="display: none;">
         <div class="header">
             <button class="back-button" onclick="showDashboard()">←</button>
             <h1>Input Health Metrics</h1>
@@ -112,6 +105,28 @@
             <button class="button" onclick="saveHealthData()">Save</button>
         </form>
     </div>
+
+    <!-- ********************** Doctor Section ******************************-->
+    <!-- *********************************************************************-->
+    <!-- *********************************************************************-->
+    <!-- **********************Doctor's Dashboard ****************************-->
+    <div class="container" id="doctorScreen" style="display: none;">
+        <div class="header">
+            <h1>Patient List</h1>
+            <button class="button button-secondary" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- Scrollable Patient List -->
+        <div id="patientListContainer" class="scrollable-list">
+            <ul id="patientList" class="patient-list">
+                <!-- Patient items will be dynamically added here -->
+            </ul>
+        </div>
+
+        <button class="button" onclick="showRegisterFormDoctor()">Add New Patient</button>
+    </div>
+
+
 
     <!-- Add New Patient Form -->
     <div class="container" id="addPatientScreen" style="display: none;">
@@ -181,77 +196,53 @@
         </table>
     </div>
 
-    <!-- Register Form for doctor -->
+
+    <!-- Register Form for Doctor to Register Patient -->
     <div class="container" id="registerScreenDoctor" style="display: none;">
         <div class="header">
-            <button class="back-button" onclick="showLoginScreen()">←</button>
+            <button class="back-button" onclick="showDoctorDashboard()">←</button>
             <h1>Register Patient</h1>
         </div>
         <form onsubmit="return false;">
+
+            <!-- First Name and Last Name for Patient Registration -->
             <div class="input-group">
-                <label for="registerName">Name</label>
-                <input type="text" id="registerName" placeholder="Enter name">
+                <label for="registerFirstNamePatient">First Name</label>
+                <input type="text" id="registerFirstNamePatient" placeholder="Enter first name">
             </div>
+
             <div class="input-group">
-                <label for="registerEmail">Email</label>
-                <input type="email" id="registerEmail" placeholder="Enter email">
+                <label for="registerLastNamePatient">Last Name</label>
+                <input type="text" id="registerLastNamePatient" placeholder="Enter last name">
             </div>
+
+            <!-- Email Field for Patient Registration -->
             <div class="input-group">
-                <label for="registerPassword">Password</label>
+                <label for="registerEmailPatient">Email</label>
+                <input type="email" id="registerEmailPatient" placeholder="Enter email">
+            </div>
+
+            <!-- Password Field for Patient Registration -->
+            <div class="input-group">
+                <label for="registerPasswordPatient">Password</label>
                 <div class="password-input-wrapper">
-                    <input type="password" id="registerPassword" placeholder="Enter password">
-                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPassword')">👁️</button>
-                </div>
-            </div>
-            <button class="button" onclick="register()">Register</button>
-        </form>
-    </div>
-
-    <!-- Register Form for Admin -->
-    <div class="container" id="registerScreenAdmin" style="display: none;">
-        <div class="header">
-            <button class="back-button" onclick="showAdminDashboard()">←</button>
-            <h1>Register User</h1>
-        </div>
-        <form onsubmit="return false;">
-            <!-- Select Role Section -->
-            <div class="button-group">
-                <button type="button" class="button role-button" id="doctorButton" onclick="selectRole('Doctor')">Doctor</button>
-                <button type="button" class="button role-button" id="patientButton" onclick="selectRole('Patient')">Patient</button>
-            </div>
-
-            <!-- First Name and Last Name for Doctor Registration -->
-            <div class="input-group">
-                <label for="registerFirstName">First Name</label>
-                <input type="text" id="registerFirstName" placeholder="Enter first name">
-            </div>
-
-            <div class="input-group">
-                <label for="registerLastName">Last Name</label>
-                <input type="text" id="registerLastName" placeholder="Enter last name">
-            </div>
-
-            <div class="input-group">
-                <label for="registerEmail">Email</label>
-                <input type="email" id="registerEmailAdmin" placeholder="Enter email">
-            </div>
-
-            <!-- Add the Role Field (hidden) -->
-            <input type="hidden" id="selectedRole" value="Patient"> <!-- Default is 'Patient' -->
-
-            <div class="input-group">
-                <label for="registerPassword">Password</label>
-                <div class="password-input-wrapper">
-                    <input type="password" id="registerPasswordAdmin" placeholder="Enter password">
-                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPassword')">👁️</button>
+                    <input type="password" id="registerPasswordPatient" placeholder="Enter password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPasswordPatient')">👁️</button>
                 </div>
             </div>
 
+            <!-- Hidden Doctor ID Field (Doctor ID will be attached to the patient) -->
+            <input type="hidden" id="selectedDoctorId" value="">
+
+            <!-- Register Button -->
             <div class="button-container">
-                <button class="button full-width" onclick="registerAdmin()">Register</button>
+                <button class="button full-width" onclick="registerPatientByDoctor()">Register Patient</button>
             </div>
         </form>
     </div>
+
+
+
 
 
     <!-- Change Password Form -->
@@ -282,7 +273,9 @@
             <button class="button" onclick="changePassword()">Change Password</button>
         </form>
     </div>
-
+    <!-- ********************** Admin Section ******************************-->
+    <!-- *********************************************************************-->
+    <!-- *********************************************************************-->
     <!-- Admin Dashboard -->
     <div class="container" id="adminScreen" style="display: none;">
         <div class="header">
@@ -332,7 +325,51 @@
         <button class="button" onclick="showRegisterFormAdmin()">Add User</button>
     </div>
 
+    <!-- Register Form for Admin -->
+    <div class="container" id="registerScreenAdmin" style="display: none;">
+        <div class="header">
+            <button class="back-button" onclick="showAdminDashboard()">←</button>
+            <h1>Register User</h1>
+        </div>
+        <form onsubmit="return false;">
+            <!-- Select Role Section -->
+            <div class="button-group">
+                <button type="button" class="button role-button" id="doctorButton" onclick="selectRole('Doctor')">Doctor</button>
+                <button type="button" class="button role-button" id="patientButton" onclick="selectRole('Patient')">Patient</button>
+            </div>
 
+            <!-- First Name and Last Name for Doctor Registration -->
+            <div class="input-group">
+                <label for="registerFirstName">First Name</label>
+                <input type="text" id="registerFirstName" placeholder="Enter first name">
+            </div>
+
+            <div class="input-group">
+                <label for="registerLastName">Last Name</label>
+                <input type="text" id="registerLastName" placeholder="Enter last name">
+            </div>
+
+            <div class="input-group">
+                <label for="registerEmailAdmin">Email</label>
+                <input type="email" id="registerEmailAdmin" placeholder="Enter email">
+            </div>
+
+            <!-- Add the Role Field (hidden) -->
+            <input type="hidden" id="selectedRole" value="Patient"> <!-- Default is 'Patient' -->
+
+            <div class="input-group">
+                <label for="registerPasswordAdmin">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="registerPasswordAdmin" placeholder="Enter password">
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('registerPassword')">👁️</button>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="button full-width" onclick="registerAdmin()">Register</button>
+            </div>
+        </form>
+    </div>
 
 
 

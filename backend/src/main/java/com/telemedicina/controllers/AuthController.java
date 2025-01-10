@@ -201,4 +201,31 @@ public class AuthController {
             return ResponseEntity.status(403).body("Invalid role! Only 'admin' and 'doctor' can register users.");
         }
     }
+
+    @GetMapping("/doctor-id")
+    public ResponseEntity<?> getDoctorIdByEmail(@RequestParam String email) {
+        // Provjera postoji li doktor s navedenim e-mailom
+        Optional<Doctor> doctor = doctorRepository.findByEmail(email);
+        if (doctor.isPresent()) {
+            // Ako doktor postoji, vrati njegov ID
+            return ResponseEntity.ok(Map.of("doctorId", doctor.get().getId()));
+        } else {
+            // Ako doktor ne postoji, vrati grešku
+            return ResponseEntity.status(404).body("Doctor with provided email not found.");
+        }
+    }
+
+    @GetMapping("/patient-id")
+    public ResponseEntity<?> getPatientIdByEmail(@RequestParam String email) {
+        // Provjera postoji li pacijent s navedenim e-mailom
+        Optional<Patient> patient = patientRepository.findByEmail(email);
+        if (patient.isPresent()) {
+            // Ako pacijent postoji, vrati njegov ID
+            return ResponseEntity.ok(Map.of("patientId", patient.get().getId()));
+        } else {
+            // Ako pacijent ne postoji, vrati grešku
+            return ResponseEntity.status(404).body("Patient with provided email not found.");
+        }
+    }
+
 }

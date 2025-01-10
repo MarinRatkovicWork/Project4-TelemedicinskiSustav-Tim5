@@ -10,11 +10,36 @@ import java.util.List;
 @Service
 public class HealthRecordService {
 
-    @Autowired
-    private HealthRecordRepository healthRecordRepository;
+    private final HealthRecordRepository healthRecordRepository;
 
-    // Fetch the most recent health records
-    public List<HealthRecord> getRecentHealthRecords() {
-        return healthRecordRepository.findTop10ByOrderByDateDesc(); // Fetch recent 10 records
+    @Autowired
+    public HealthRecordService(HealthRecordRepository healthRecordRepository) {
+        this.healthRecordRepository = healthRecordRepository;
+    }
+
+    public List<HealthRecord> getAllHealthRecordsByPatientId(Long patientId) {
+        return healthRecordRepository.findByPatientIdOrderByDateDesc(patientId);
+    }
+
+    public List<HealthRecord> getLast10HealthRecordsByPatientId(Long patientId) {
+        return healthRecordRepository.findTop10ByPatientIdOrderByDateDesc(patientId);
+    }
+
+    public HealthRecord addHealthRecord(HealthRecord healthRecord) {
+        return healthRecordRepository.save(healthRecord);
+    }
+
+    public void deleteHealthRecord(Long recordId) {
+        healthRecordRepository.deleteById(recordId);
+    }
+
+    public HealthRecord updateHealthRecord(Long recordId, HealthRecord updatedRecord) {
+        HealthRecord existingRecord = healthRecordRepository.findById(recordId)
+                .orElseThrow(() -> new RuntimeException("Health record not found"));
+        existingRecord.setDate(updatedRecord.getDate());
+        existingRecord.setHeartRate(updatedRecord.getHeartRate());
+        existingRecord.setBloodPressure(updatedRecord.getBloodPressure());
+        existingRecord.setBloodSugar(updatedRecord.getBloodSugar());
+        return healthRecordRepository.save(existingRecord);
     }
 }

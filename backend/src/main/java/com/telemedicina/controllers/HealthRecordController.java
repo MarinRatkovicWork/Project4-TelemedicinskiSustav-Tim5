@@ -62,9 +62,5 @@ public class HealthRecordController {
     public List<HealthRecord> getAllHealthRecords() {
         return healthRecordRepository.findAll(); // Fetch all health records
     }
-    // Endpoint to fetch recent health records
-    @GetMapping("/recent")
-    public List<HealthRecord> getRecentHealthRecords() {
-        return healthRecordService.getRecentHealthRecords();
-    }
+
 }

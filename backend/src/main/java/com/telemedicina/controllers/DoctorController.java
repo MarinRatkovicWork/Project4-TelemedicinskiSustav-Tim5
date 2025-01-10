@@ -1,8 +1,10 @@
 package com.telemedicina.controllers;
 
 import com.telemedicina.models.Doctor;
+import com.telemedicina.models.Patient;
 import com.telemedicina.services.DoctorService;
 import com.telemedicina.services.AuthService;
+import com.telemedicina.services.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,6 +21,10 @@ public class DoctorController {
     private final AuthService authService;
 
     @Autowired
+    private PatientService patientService;
+
+
+    @Autowired
     public DoctorController(DoctorService doctorService, AuthService authService) {
         this.doctorService = doctorService;
         this.authService = authService;
@@ -32,6 +38,19 @@ public class DoctorController {
             return doctorService.getAllDoctors();
         } else {
             throw new RuntimeException("You do not have permission to access this resource.");
+        }
+    }
+
+    @GetMapping("/patients")
+    public List<Patient> getPatientsForDoctor(@RequestHeader("Authorization") String authToken) {
+        // Verify the token and get the authenticated doctor
+        Long doctorId = authService.getAuthenticatedDoctorId(authToken);
+
+        if (doctorId != null) {
+
+            return patientService.getPatientsByDoctorId(doctorId);
+        } else {
+            throw new RuntimeException("You are not authorized to access this resource.");
         }
     }
 }
