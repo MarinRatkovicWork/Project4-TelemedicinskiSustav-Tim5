@@ -227,5 +227,53 @@ public class AuthController {
             return ResponseEntity.status(404).body("Patient with provided email not found.");
         }
     }
+    @DeleteMapping("/doctor/{id}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long id, @RequestHeader("Authorization") String authToken) {
+        // Check if the user is an admin
+        if (authToken == null || authToken.isBlank()) {
+            return ResponseEntity.status(403).body("Authorization token is required!");
+        }
+
+        // Decode the token and check role (must be an admin)
+        String email = extractEmailFromToken(authToken.replace("Bearer ", ""));
+        Optional<Admin> existingAdmin = adminRepository.findByEmail(email);
+        if (existingAdmin.isEmpty()) {
+            return ResponseEntity.status(403).body("Only admins can delete doctors.");
+        }
+
+        // Check if the doctor exists
+        Optional<Doctor> doctor = doctorRepository.findById(id);
+        if (doctor.isEmpty()) {
+            return ResponseEntity.status(404).body("Doctor not found.");
+        }
+
+        // Delete the doctor
+        doctorRepository.delete(doctor.get());
+        return ResponseEntity.ok("Doctor deleted successfully.");
+    }
+    @DeleteMapping("/patient/{id}")
+    public ResponseEntity<?> deletePatient(@PathVariable Long id, @RequestHeader("Authorization") String authToken) {
+        // Check if the user is an admin
+        if (authToken == null || authToken.isBlank()) {
+            return ResponseEntity.status(403).body("Authorization token is required!");
+        }
+
+        // Decode the token and check role (must be an admin)
+        String email = extractEmailFromToken(authToken.replace("Bearer ", ""));
+        Optional<Admin> existingAdmin = adminRepository.findByEmail(email);
+        if (existingAdmin.isEmpty()) {
+            return ResponseEntity.status(403).body("Only admins can delete patients.");
+        }
+
+        // Check if the patient exists
+        Optional<Patient> patient = patientRepository.findById(id);
+        if (patient.isEmpty()) {
+            return ResponseEntity.status(404).body("Patient not found.");
+        }
+
+        // Delete the patient
+        patientRepository.delete(patient.get());
+        return ResponseEntity.ok("Patient deleted successfully.");
+    }
 
 }

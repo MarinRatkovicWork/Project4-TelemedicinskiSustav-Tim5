@@ -301,6 +301,7 @@
     <!-- *********************************************************************-->
     <!-- *********************************************************************-->
     <!-- Admin Dashboard -->
+    <!-- Admin Dashboard -->
     <div class="container" id="adminScreen" style="display: none;">
         <div class="header">
             <h1>Admin Dashboard</h1>
@@ -312,12 +313,13 @@
             <h2>Doctors</h2>
             <div class="scroll-list" style="overflow-y: auto; flex: 1;">
                 <!-- Table to display doctor information -->
-                <table id="doctorTable">
+                <table id="doctorTable" class="table">
                     <thead>
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
                         <th>Number of patients</th>
+                        <th>Actions</th> <!-- Added a column for the Delete button -->
                     </tr>
                     </thead>
                     <tbody id="doctorListAdmin">
@@ -332,12 +334,13 @@
             <h2>Patients</h2>
             <div class="scroll-list" style="overflow-y: auto; flex: 1;">
                 <!-- Table to display patient information -->
-                <table id="patientTable">
+                <table id="patientTable" class="table">
                     <thead>
                     <tr>
                         <th>Patient Name</th>
                         <th>Patient Email</th>
                         <th>Assigned Doctor</th>
+                        <th>Actions</th> <!-- Added a column for the Delete button -->
                     </tr>
                     </thead>
                     <tbody id="patientListAdmin">
@@ -346,8 +349,12 @@
                 </table>
             </div>
         </div>
+
+        <!-- Add User Button -->
         <button class="button" onclick="showRegisterFormAdmin()">Add User</button>
     </div>
+
+
 
     <!-- Register Form for Admin -->
     <div class="container" id="registerScreenAdmin" style="display: none;">

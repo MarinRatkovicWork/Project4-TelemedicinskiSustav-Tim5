@@ -63,7 +63,6 @@ async function registerAdmin() {
     }
 }
 
-// Fetch all doctors for admin
 async function getDoctors() {
     const doctorListAdmin = document.getElementById('doctorListAdmin');
     doctorListAdmin.innerHTML = '';  // Clear previous content
@@ -93,6 +92,7 @@ async function getDoctors() {
                     <td>${doctor.firstName} ${doctor.lastName}</td>
                     <td>${doctor.email}</td>
                     <td>${doctor.patients ? doctor.patients.length : 0}</td>  <!-- Show the number of patients -->
+                    <td><button class="button button-danger" onclick="deleteDoctor(${doctor.id})">Delete</button></td>
                 `;
                 doctorListAdmin.appendChild(row);
             });
@@ -127,7 +127,6 @@ async function getPatients() {
 
         if (response.ok) {
             const patients = await response.json();  // Parse the response as JSON
-            console.log('Fetched patients:', patients);  // Debugging line to check response
 
             // Populate the patient table
             patients.forEach((patient) => {
@@ -140,6 +139,7 @@ async function getPatients() {
                     <td>${patient.firstName}</td>
                     <td>${patient.email}</td>
                     <td>${doctorName}</td>
+                    <td><button class="button button-danger" onclick="deletePatient(${patient.id})">Delete</button></td>
                 `;
                 patientListAdmin.appendChild(row);
             });
@@ -152,3 +152,62 @@ async function getPatients() {
         alert('An error occurred while fetching patient data.');
     }
 }
+
+async function deleteDoctor(doctorId) {
+    const authToken = localStorage.getItem("jwtToken");
+    if (!authToken) {
+        alert("Authorization token is missing. Please log in first.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/auth/doctor/${doctorId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${authToken}`,
+            },
+        });
+
+        const responseText = await response.text();
+        if (response.ok) {
+            alert(responseText);
+            getDoctors(); // Refresh the doctor list after deletion
+        } else {
+            alert("Error: " + responseText);
+        }
+    } catch (error) {
+        console.error('Error occurred while deleting doctor:', error);
+        alert('An error occurred while deleting doctor.');
+    }
+}
+
+async function deletePatient(patientId) {
+    const authToken = localStorage.getItem("jwtToken");
+    if (!authToken) {
+        alert("Authorization token is missing. Please log in first.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/auth/patient/${patientId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${authToken}`,
+            },
+        });
+
+        const responseText = await response.text();
+        if (response.ok) {
+            alert(responseText);
+            getPatients(); // Refresh the patient list after deletion
+        } else {
+            alert("Error: " + responseText);
+        }
+    } catch (error) {
+        console.error('Error occurred while deleting patient:', error);
+        alert('An error occurred while deleting patient.');
+    }
+}
+
+
+

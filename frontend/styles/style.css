@@ -476,3 +476,52 @@
 .delete-button:hover {
     background-color: darkred;
 }
+/* Red delete button */
+.button-danger {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.button-danger:hover {
+    background-color: #ff0000;
+}
+/* Make sure the container's overflow only allows vertical scrolling */
+.scrollable-list {
+    max-height: 600px;  /* Adjust based on your layout */
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Ensure the table fits within the scrollable area and prevents horizontal scrolling */
+.table {
+    width: 100%;  /* Take full width of the container */
+    table-layout: fixed;  /* Prevent the table from expanding beyond the container */
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;  /* Prevent text overflow to create horizontal scroll */
+    text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+}
+
+/* Style for buttons inside the table */
+button.button-danger {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+button.button-danger:hover {
+    background-color: #ff0000;
+}
