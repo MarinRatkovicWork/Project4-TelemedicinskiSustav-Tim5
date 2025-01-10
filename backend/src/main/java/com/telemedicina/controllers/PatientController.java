@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -26,15 +29,37 @@ public class PatientController {
         this.healthRecordService = healthRecordService;
     }
 
-    // Endpoint to get all patients only for Admins
     @GetMapping("/")
-    public List<Patient> getAllPatients(@RequestHeader("Authorization") String authToken) {
+    public List<Map<String, Object>> getAllPatients(@RequestHeader("Authorization") String authToken) {
         if (authService.isAdmin(authToken)) {
-            return patientService.getAllPatients();
+            List<Patient> patients = patientService.getAllPatients();
+
+            // List to hold the response data
+            List<Map<String, Object>> response = new ArrayList<>();
+
+            for (Patient patient : patients) {
+                Map<String, Object> patientData = new HashMap<>();
+                patientData.put("firstName", patient.getFirstName());
+                patientData.put("lastName", patient.getLastName());
+                patientData.put("email", patient.getEmail());
+
+                // Get doctor name (firstName + lastName)
+                String doctorName = (patient.getDoctor() != null)
+                        ? patient.getDoctor().getFirstName() + " " + patient.getDoctor().getLastName()
+                        : "No doctor assigned";
+
+                patientData.put("doctorName", doctorName);
+
+                // Add the patient data to the response
+                response.add(patientData);
+            }
+
+            return response;
         } else {
             throw new RuntimeException("You do not have permission to access this resource.");
         }
     }
+
 
     // Endpoint to create a new patient
     @PostMapping("/")

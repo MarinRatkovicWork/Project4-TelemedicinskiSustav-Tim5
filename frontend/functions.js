@@ -256,14 +256,19 @@ async function getPatients() {
 
         if (response.ok) {
             const patients = await response.json();  // Parse the response as JSON
+            console.log('Fetched patients:', patients);  // Debugging line to check response
 
             // Populate the patient table
             patients.forEach((patient) => {
                 const row = document.createElement('tr');
+
+                // Extract doctorName directly from the API response
+                const doctorName = patient.doctorName ? patient.doctorName : 'No doctor assigned';
+
                 row.innerHTML = `
                     <td>${patient.firstName}</td>
                     <td>${patient.email}</td>
-                    <td>${patient.doctor ? patient.doctor.firstName + ' ' + patient.doctor.lastName : 'No doctor assigned'}</td>
+                    <td>${doctorName}</td>
                 `;
                 patientListAdmin.appendChild(row);
             });
@@ -276,6 +281,10 @@ async function getPatients() {
         alert('An error occurred while fetching patient data.');
     }
 }
+
+
+
+
 
 /****************************************************************************************
 *******************************************************************************************
@@ -511,6 +520,89 @@ async function saveHealthData() {
     }
 }
 
+let selectedRecordId = null; // Variable to store the selected record ID
+
+async function loadAndDisplayAllHealthRecords() {
+    try {
+        const token = localStorage.getItem('jwtToken');
+        const response = await fetch(`http://localhost:8080/api/patients/${currentUser.id}/health-records`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const records = await response.json();
+            const tbody = document.getElementById('healthDataBody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-record-id', record.id); // Store record id as a data attribute
+
+                // Format dateTime from LocalDateTime (ISO format) to a readable string
+                const date = new Date(record.dateTime);  // Converting the string to a Date object
+                const formattedDate = date.toLocaleString();  // You can customize this format as per your requirement
+
+                row.innerHTML = `
+                    <td>${formattedDate || 'N/A'}</td>
+                    <td>${record.heartRate || 'N/A'}</td>
+                    <td>${record.bloodPressure || 'N/A'}</td>
+                    <td>${record.bloodSugar || 'N/A'}</td>
+                    <td><button class="delete-btn" onclick="selectRecordToDelete(event)">Delete</button></td> <!-- Delete button inside each row -->
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            console.error('Failed to fetch health records:', response.statusText);
+            alert('Unable to fetch health records.');
+        }
+    } catch (error) {
+        console.error('Error fetching health records:', error);
+    }
+}
+
+// Function to select a record for deletion
+function selectRecordToDelete(event) {
+    const row = event.target.closest('tr');  // Get the closest row
+    selectedRecordId = row.getAttribute('data-record-id');  // Get the record ID from the data attribute
+
+    // Display the delete button
+    document.getElementById('deleteButton').style.display = 'block';
+}
+
+// Function to delete the selected health record
+async function deleteHealthRecord() {
+    if (!selectedRecordId) {
+        alert('No record selected for deletion.');
+        return;
+    }
+
+    const token = localStorage.getItem('jwtToken');
+    try {
+        const response = await fetch(`http://localhost:8080/api/patients/${currentUser.id}/health-records/${selectedRecordId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            alert('Record deleted successfully!');
+            loadAndDisplayAllHealthRecords();  // Refresh the list of health records
+            selectedRecordId = null;  // Reset the selected record ID
+            document.getElementById('deleteButton').style.display = 'none';  // Hide the delete button
+        } else {
+            console.error('Failed to delete health record:', response.statusText);
+            alert('Unable to delete the health record.');
+        }
+    } catch (error) {
+        console.error('Error deleting health record:', error);
+        alert('An error occurred while deleting the health record.');
+    }
+}
 
 
 

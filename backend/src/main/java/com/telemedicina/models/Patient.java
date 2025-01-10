@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
-// Patient Model
 @Entity
 public class Patient {
     @Id
@@ -13,10 +12,10 @@ public class Patient {
     private Long id;
 
     @Column(nullable = false)
-    private String firstName; // Renamed from 'name' to 'firstName'
+    private String firstName;
 
     @Column(nullable = false)
-    private String lastName; // Renamed from 'surname' to 'lastName'
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -33,23 +32,7 @@ public class Patient {
     @JsonManagedReference
     private List<HealthRecord> healthRecords;
 
-    // Default constructor
-    public Patient() {
-    }
-
-    // Parameterized constructor
-    public Patient(Long id, String firstName, String lastName, String email, String password, Doctor doctor, List<HealthRecord> healthRecords) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName; // Updated field
-        this.email = email;
-        this.password = password;
-        this.doctor = doctor;
-        this.healthRecords = healthRecords;
-    }
-
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -58,19 +41,19 @@ public class Patient {
         this.id = id;
     }
 
-    public String getFirstName() { // Updated getter method
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) { // Updated setter method
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName() { // Updated getter method
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) { // Updated setter method
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 

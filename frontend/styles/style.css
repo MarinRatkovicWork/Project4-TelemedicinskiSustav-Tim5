@@ -446,7 +446,21 @@
             padding: 10px;
             margin-top: 20px;
         }
-        .patient-item {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
+.patient-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+.delete-button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin-top: 20px;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
